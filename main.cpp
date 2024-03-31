@@ -29,13 +29,21 @@ public:
     bool inStock;
     Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(name) {
         while (ID <= 0 || ID >= 100) {
-            cout << "Invalid ID. Please enter the product ID again: " << endl;
+            cout << "Invalid ID. Please enter the product ID of "<< n << " again: " << endl;
             cin >> ID;
         }
         productID = ID;
         name = n;
         brandName = bN;
+        while (q < 0) {
+            cout << "Invalid quantity. Please enter the quantity of "<< n << " again: " << endl;
+            cin >> q;
+        }
         quantity = q;
+        while (p <= 0) {
+            cout << "Invalid price. Please enter the price of "<< n << " again: " << endl;
+            cin >> p;
+        }
         price = p;
         inStock = iS;
 
