@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <stdexcept>
 using namespace std;
 
 class Item;
@@ -26,7 +27,18 @@ public:
     int quantityCart = 0;
     float price;
     bool inStock;
-    Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(c) , name(n), brandName(bN), quantity(q), price(p), inStock(iS), productID(ID) {
+    Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(name) {
+        while (ID <= 0 || ID >= 100) {
+            cout << "Invalid ID. Please enter the product ID again: " << endl;
+            cin >> ID;
+        }
+        productID = ID;
+        name = n;
+        brandName = bN;
+        quantity = q;
+        price = p;
+        inStock = iS;
+
         c.CategoryPush(this);
     }
     void display() {
@@ -120,7 +132,7 @@ class Cart {
 int main() {
     Category Electronics("Electronics");
     Category Drinks("Drinks");
-    Item i1("Laptop", "Dell", 10, 1000, true, Electronics, 1);
+    Item i1("Laptop", "Dell", 10, 1000, true, Electronics, -50);
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
