@@ -4,6 +4,7 @@
 #include <fstream>
 using namespace std;
 
+class Item;
 
 class Category {
 protected:
