@@ -12,9 +12,9 @@ protected:
     string name;
     vector<Item*> itemsOfCategory;
 public:
-    Category(string n) { // Invalid name check
+    Category(string n) {
         bool validName;
-        do {
+        do {    // Invalid name check
             validName = true;
             for(int size_t = 0; size_t < n.length(); size_t++) {
                 if(n[size_t] != ' ') {
