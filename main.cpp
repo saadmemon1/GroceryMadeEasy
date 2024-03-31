@@ -30,7 +30,7 @@ public:
         c.CategoryPush(this);
     }
     void display() {
-        cout << "Product ID: " << productID << "Item: " << name << " Brand: " << brandName << " Quantity: " << quantity << " Price: " << price << " In Stock: " << inStock << "\n";
+        cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nQuantity: " << quantity << "\nPrice: " << price << "\nIn stock: " << boolalpha << inStock  << endl << endl;
     }
     void cartDisplay() {
         cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nQuantity: " << quantityCart << "\nPrice: " << price << endl << endl;
@@ -86,11 +86,11 @@ class Cart {
         }
     }
     void display() {
-        cout << "\nCart Details: " << endl;
+        cout << "\n\033[1mCart Details:\033[0m" << endl; // \033[1m starts bold text and \033[0m ends it
         for(int i = 0; i< items.size(); i++) {
             items[i]->cartDisplay();
         }
-        cout << "\nTotal: " << this->calculateTotal() << endl;
+        cout << "Total: " << this->calculateTotal() << endl;
     }
     void removeItem(Item* item) {
         if(items.size() == 0) {
@@ -122,13 +122,21 @@ int main() {
     Category Drinks("Drinks");
     Item i1("Laptop", "Dell", 10, 1000, true, Electronics, 1);
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
+    // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
+    i1.display(); // When you click on an item.
     cart.addItem(&i1);
     cart.addItem(&i2);
     cart.addItem(&i2);
-    cart.addItem(&i2);
+    cart.addItem(&i2); // Shows Item out of stock.
+    i2.display();   // Shows the item details, with quantity as 0 and inStock as false.
     cart.display();
-//    cout << "Total: " << cart.calculateTotal() << endl;
+    cart.removeItem(&i1);
+    cart.removeItem(&i2);
+    cart.display();
+    i1.display();
+    i2.display();
+    cout << "Total: " << cart.calculateTotal() << endl;
 
     return 0;
 }
