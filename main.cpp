@@ -12,7 +12,23 @@ protected:
     string name;
     vector<Item*> itemsOfCategory;
 public:
-    Category(string n) : name(n) {}
+    Category(string n) {
+        bool validName; // Invalid name check
+        do {
+            validName = true;
+            for(int size_t = 0; size_t < n.length(); size_t++) {
+                if(n[size_t] != ' ') {
+                    if(n[size_t] < 65 || n[size_t] > 122) {
+                        cout << "Invalid name. Please enter the name of "<< n << " again: " << endl;
+                        cin >> n;
+                        validName = false;
+                        break;
+                    }
+                }
+            }
+        } while (!validName);
+        name = n;
+    }
     void CategoryPush(Item* i) {
         itemsOfCategory.push_back(i);
     }
@@ -28,19 +44,48 @@ public:
     float price;
     bool inStock;
     Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(name) {
-        while (ID <= 0 || ID >= 100) {
+        while (ID <= 0 || ID >= 100) { // Invalid Product ID check
             cout << "Invalid ID. Please enter the product ID of "<< n << " again: " << endl;
             cin >> ID;
         }
         productID = ID;
+        bool validName; // Invalid name check
+        do {
+            validName = true;
+            for(int size_t = 0; size_t < n.length(); size_t++) {
+                if(n[size_t] != ' ') {
+                    if(n[size_t] < 65 || n[size_t] > 122) {
+                        cout << "Invalid name. Please enter the name of "<< n << " again: " << endl;
+                        cin >> n;
+                        validName = false;
+                        break;
+                    }
+                }
+            }
+        } while (!validName);
         name = n;
+
+        bool validBrandName; // Invalid brand name check
+        do {
+            validBrandName = true;
+            for(int size_t = 0; size_t < bN.length(); size_t++) {
+                if(bN[size_t] != ' ') {
+                    if(bN[size_t] < 65 || bN[size_t] > 122) {
+                        cout << "Invalid brand name. Please enter the name of "<< n << " again: " << endl;
+                        getline(cin, bN);
+                        validBrandName = false;
+                        break;
+                    }
+                }
+            }
+        } while (!validBrandName);
         brandName = bN;
-        while (q < 0) {
+        while (q < 0) { // Invalid quantity check
             cout << "Invalid quantity. Please enter the quantity of "<< n << " again: " << endl;
             cin >> q;
         }
         quantity = q;
-        while (p <= 0) {
+        while (p <= 0) {    // Invalid price check
             cout << "Invalid price. Please enter the price of "<< n << " again: " << endl;
             cin >> p;
         }
@@ -140,7 +185,7 @@ class Cart {
 int main() {
     Category Electronics("Electronics");
     Category Drinks("Drinks");
-    Item i1("Laptop", "Dell", 10, 1000, true, Electronics, -50);
+    Item i1("Laptop For Alesh!!&", "Dell", 10, 1000, true, Electronics, -50); // Invalid ID check, Invalid name check
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
