@@ -118,10 +118,10 @@ class Cart {
 
 
 int main() {
-    Category c1("Electronics");
-    Category c2("Drinks");
-    Item i1("Laptop", "Dell", 10, 1000, true, c1, 1);
-    Item i2("Soda", "Coca Cola", 2, 1, true, c2, 2);
+    Category Electronics("Electronics");
+    Category Drinks("Drinks");
+    Item i1("Laptop", "Dell", 10, 1000, true, Electronics, 1);
+    Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     Cart cart;
     cart.addItem(&i1);
     cart.addItem(&i2);
