@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_GroceryMadeEasy: phony || CMakeFiles/Gro
 build CMakeFiles/GroceryMadeEasy.dir/main.cpp.o: CXX_COMPILER__GroceryMadeEasy_unscanned_Debug /Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP$ IBA/OOP$ Project/GroceryMadeEasy/main.cpp || cmake_object_order_depends_target_GroceryMadeEasy
   DEP_FILE = CMakeFiles/GroceryMadeEasy.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.3 -fcolor-diagnostics
-  INCLUDES = -I"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/." -I"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/Intro to Programming IBA/raylib/raylib/src"
+  INCLUDES = -I/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/Intro -I"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/to" -I"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/Programming" -I"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/IBA/raylib/raylib/src" -I/opt/homebrew/Cellar/raylib/4.5.0/include
   OBJECT_DIR = CMakeFiles/GroceryMadeEasy.dir
   OBJECT_FILE_DIR = CMakeFiles/GroceryMadeEasy.dir
 
@@ -66,7 +66,8 @@ build CMakeFiles/GroceryMadeEasy.dir/main.cpp.o: CXX_COMPILER__GroceryMadeEasy_u
 
 build GroceryMadeEasy: CXX_EXECUTABLE_LINKER__GroceryMadeEasy_Debug CMakeFiles/GroceryMadeEasy.dir/main.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.3
-  LINK_LIBRARIES = -lraylib
+  LINK_LIBRARIES = -Wl,-rpath,/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/Intro -Wl,-rpath,"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/to" -Wl,-rpath,"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/Programming" -Wl,-rpath,"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/IBA/raylib/raylib/src" -Wl,-rpath,/opt/homebrew/Cellar/raylib/4.5.0/lib  -lraylib
+  LINK_PATH = -L/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/Intro   -L"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/to"   -L"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/Programming"   -L"/Users/saad/Library/CloudStorage/OneDrive-InstituteofBusinessAdministration/OOP IBA/OOP Project/GroceryMadeEasy/IBA/raylib/raylib/src"   -L/opt/homebrew/Cellar/raylib/4.5.0/lib
   OBJECT_DIR = CMakeFiles/GroceryMadeEasy.dir
   POST_BUILD = :
   PRE_LINK = :

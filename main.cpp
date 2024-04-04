@@ -181,15 +181,43 @@ class Cart {
             }
     }
 };
+const int W = 800, H = 800;
+
+void MainMenu() {
+    DrawText("Are you a rider or a user?", W/2 - MeasureText("Are you a rider or a user?", 20)/2, H/2 - 20, 20, BLACK);
+    DrawText("Press U for User", W/2 - MeasureText("Press U for User", 20)/2, H/2 + 20, 20, BLACK);
+    DrawText("Press R for Rider", W/2 - MeasureText("Press R for Rider", 20)/2, H/2 + 60, 20, BLACK);
+}
+
+// Function to draw the homepage for users
+void UserHomePage(const std::vector<Item*>& items) {
+    DrawText("Welcome to the Grocery Store!", W/2 - MeasureText("Welcome to the Grocery Store!", 20)/2, 20, 20, BLACK);
+    for (int i = 0; i < items.size(); i++) {
+        DrawText(items[i]->name.c_str(), 20, 60 + i * 40, 20, BLACK);
+    }
+}
 
 
 int main() {
+    InitWindow(W, H, "GME: Grocery Made Easy");
     Category Electronics("Electronics");
     Category Drinks("Drinks");
     Item i1("Laptop For Alesh!!&", "Dell", 10, 1000, true, Electronics, -50); // Invalid ID check, Invalid name check
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        if(IsKeyPressed(KEY_U)) {
+            UserHomePage({&i1, &i2});
+        }
+        else {
+            MainMenu();
+        }
+        EndDrawing();
+    }
+    CloseWindow();
     i1.display(); // When you click on an item.
     cart.addItem(&i1);
     cart.addItem(&i2);
