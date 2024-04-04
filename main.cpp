@@ -197,6 +197,12 @@ void UserHomePage(const std::vector<Item*>& items) {
     }
 }
 
+enum AppState {
+    MAIN_MENU,
+    USER_HOME_PAGE,
+    // Add other states as needed
+};
+
 
 int main() {
     InitWindow(W, H, "GME: Grocery Made Easy");
@@ -206,15 +212,32 @@ int main() {
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
-    while (!WindowShouldClose()) {
+    AppState state = MAIN_MENU;
+    while (!WindowShouldClose())    // Detect window close button or ESC key
+    {
+        // Update
+        if (IsKeyPressed(KEY_U)) {
+            state = USER_HOME_PAGE;
+        } else if (IsKeyPressed(KEY_R)) {
+            // TODO: Change state to rider homepage
+        }
+
+        // Draw
         BeginDrawing();
+
         ClearBackground(RAYWHITE);
-        if(IsKeyPressed(KEY_U)) {
-            UserHomePage({&i1, &i2});
+
+        // Draw the appropriate screen based on the current state
+        switch (state) {
+            case MAIN_MENU:
+                MainMenu();
+                break;
+            case USER_HOME_PAGE:
+                UserHomePage({&i1, &i2});
+                break;
+                // Handle other states as needed
         }
-        else {
-            MainMenu();
-        }
+
         EndDrawing();
     }
     CloseWindow();
