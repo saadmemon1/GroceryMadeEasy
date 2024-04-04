@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <raylib.h>
 #include <fstream>
 #include <stdexcept>
 using namespace std;
