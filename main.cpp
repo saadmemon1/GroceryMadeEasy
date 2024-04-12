@@ -183,12 +183,10 @@ class Cart {
 };
 const int W = 800, H = 800;
 
-void MainMenu() {
-    Font OpenSans = LoadFont("resources/fonts/OpenSans_Regular.ttf"); // Replace with your font file
-    DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 40, 0).x/2, 20}, 40, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press U for User", {W/2 - MeasureTextEx(OpenSans, "Press U for User", 20, 0).x/2, H/2}, OpenSans.baseSize, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press R for Rider", {W/2 - MeasureTextEx(OpenSans, "Press R for Rider", 20, 0).x/2, H/2 + 60}, 20, 2.0f, BLACK);
-    UnloadFont(OpenSans);
+void MainMenu(Font& OpenSans) {
+    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/3 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'U' to login as a user", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, H/2}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'R' to login as a rider", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, (H/2)+60}, 20, 2.0f, BLACK);
 }
 
 // Function to draw the homepage for users
@@ -228,12 +226,12 @@ int main() {
         // Draw
         BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        ClearBackground(LIGHTGRAY);
 
         // Draw the appropriate screen based on the current state
         switch (state) {
             case MAIN_MENU:
-                MainMenu();
+                MainMenu(OpenSans);
                 break;
             case USER_HOME_PAGE:
                 UserHomePage({&i1, &i2});
