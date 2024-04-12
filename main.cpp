@@ -192,7 +192,7 @@ void MainMenu() {
 // Function to draw the homepage for users
 void UserHomePage(const std::vector<Item*>& items) {
     DrawText("Welcome to the Grocery Store!", W/2 - MeasureText("Welcome to the Grocery Store!", 20)/2, 20, 20, BLACK);
-    for (int i = 0; i < items.size(); i++) {
+    for (size_t i = 0; i < items.size(); i++) {
         DrawText(items[i]->name.c_str(), 20, 60 + i * 40, 20, BLACK);
     }
 }
