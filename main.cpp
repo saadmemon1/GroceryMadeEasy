@@ -184,9 +184,11 @@ class Cart {
 const int W = 800, H = 800;
 
 void MainMenu() {
-    DrawText("Are you a rider or a user?", W/2 - MeasureText("Are you a rider or a user?", 20)/2, H/2 - 20, 20, BLACK);
-    DrawText("Press U for User", W/2 - MeasureText("Press U for User", 20)/2, H/2 + 20, 20, BLACK);
-    DrawText("Press R for Rider", W/2 - MeasureText("Press R for Rider", 20)/2, H/2 + 60, 20, BLACK);
+    Font OpenSans = LoadFont("resources/fonts/OpenSans_Regular.ttf"); // Replace with your font file
+    DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 40, 0).x/2, 20}, 40, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press U for User", {W/2 - MeasureTextEx(OpenSans, "Press U for User", 20, 0).x/2, H/2}, OpenSans.baseSize, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press R for Rider", {W/2 - MeasureTextEx(OpenSans, "Press R for Rider", 20, 0).x/2, H/2 + 60}, 20, 2.0f, BLACK);
+    UnloadFont(OpenSans);
 }
 
 // Function to draw the homepage for users
@@ -208,11 +210,12 @@ int main() {
     InitWindow(W, H, "GME: Grocery Made Easy");
     Category Electronics("Electronics");
     Category Drinks("Drinks");
-    Item i1("Laptop For Alesh!!&", "Dell", 10, 1000, true, Electronics, -50); // Invalid ID check, Invalid name check
+    Item i1("Laptop For Alesh", "Dell", 10, 1000, true, Electronics, 50); // Invalid ID check, Invalid name check
     Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
     // This manual entry of items will be replaced by using fstream library and a .txt file.
     Cart cart;
     AppState state = MAIN_MENU;
+    Font OpenSans = LoadFont("resources/fonts/OpenSans_Regular.ttf"); // Replace with your font file
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
@@ -240,6 +243,7 @@ int main() {
 
         EndDrawing();
     }
+    UnloadFont(OpenSans);
     CloseWindow();
     i1.display(); // When you click on an item.
     cart.addItem(&i1);
