@@ -153,7 +153,7 @@ class Cart {
     }
     void display() {
         cout << "\n\033[1mCart Details:\033[0m" << endl; // \033[1m starts bold text and \033[0m ends it
-        for(int i = 0; i< items.size(); i++) {
+        for(size_t i = 0; i< items.size(); i++) {
             items[i]->cartDisplay();
         }
         cout << "Total: " << this->calculateTotal() << endl;
@@ -163,7 +163,7 @@ class Cart {
             cout << "Cart is empty." << endl;
             return;
         }
-            for (int i = 0; i < items.size(); i++) {
+            for (size_t i = 0; i < items.size(); i++) {
                 if (items[i]->productID == item->productID) {
                     if(items[i]->quantityCart > 1) {
                         items[i]->quantityCart--;
