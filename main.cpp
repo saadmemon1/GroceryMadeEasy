@@ -8,23 +8,35 @@ using namespace std;
 
 class Item;
 
-class Category {
-protected:
-    string name;
-    vector<Item*> itemsOfCategory;
-public:
-    Category(const string& n) {
-        validateName(n);
-        name = n;
-    }
-    void validateName(const string& n) {
-        for (size_t i = 0; i < n.length(); ++i) {
-            if (n[i] != ' ' && (n[i] < 65 || n[i] > 122)) {
-                throw runtime_error("Oops! Invalid name. Please enter alphabets only.");
+void validateName(string& n) {
+    while(true) {
+        try {
+            for (size_t i = 0; i < n.length(); ++i) {
+                if (n[i] != ' ' && (n[i] < 65 || n[i] > 122)) {
+                    throw runtime_error("Oops! Invalid name. Please enter alphabets only.");
+                }
             }
+            break;  // If input is valid, break the loop
+        } catch (const runtime_error& e) {
+            cout << e.what() << endl;
+            cout << "Please enter the name again: ";
+            cin.clear();
+            cin >> n;
         }
     }
+}
 
+
+class Category {
+protected:
+    vector<Item*> itemsOfCategory;
+public:
+    string name;
+    Category(const string& n) {
+        string x = n;
+        validateName(x);
+        name = x;
+    }
     void CategoryPush(Item& i) {
         itemsOfCategory.push_back(&i);
     }
@@ -32,11 +44,19 @@ public:
 
 class Item : public Category {
 protected:
-    void validateProductID(int ID) {
-        if (ID <= 0 || ID >= 100) {
-            throw runtime_error("Invalid product ID. Please enter a value between 1 and 99.");
+    void validateProductID(int& ID) {
+        while(true) {
+            try {
+                if (ID <= 0 || ID >= 100) {
+                    throw runtime_error("Invalid product ID. Please enter a value between 1 and 99.");
+                }
+                break;  // If input is valid, break the loop
+            } catch (const runtime_error& e) {
+                cout << e.what() << endl;
+                cout << "Please enter the product ID again: ";
+                cin >> ID;
+            }
         }
-        productID = ID;
     }
 public:
     string name;
@@ -46,11 +66,12 @@ public:
     int quantityCart = 0;
     float price;
     bool inStock;
-    Item(const string& n, const string& bN, int q, float p, bool iS, Category& c, int ID) : Category(n) {
-        validateName(bN); // Reusing base class validation for brand name (inheriting)
-        brandName = bN;
+    string categoryName;
+    Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(c) {
         validateName(n);
         name = n;
+        validateName(bN);    // Reusing base class validation for brand name (inheriting)
+        brandName = bN;
         validateProductID(ID);
         productID = ID;
 
@@ -67,9 +88,10 @@ public:
         inStock = iS;
         if(quantity == 0) inStock = false;
         c.CategoryPush(*this);
+        categoryName = c.name;
     }
     void display() {
-        cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nQuantity: " << quantity << "\nPrice: " << price << "\nIn stock: " << boolalpha << inStock  << endl << endl;
+        cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nCateogry: " << categoryName << "\nQuantity: " << quantity << "\nPrice: " << price << "\nIn stock: " << boolalpha << inStock  << endl << endl;
     }
     void cartDisplay() {
         cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nQuantity: " << quantityCart << "\nPrice: " << price << endl << endl;
@@ -157,14 +179,14 @@ public:
 const int W = 800, H = 800;
 
 void MainMenu(Font& OpenSans) {
-    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/3 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {300 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
     DrawTextEx(OpenSans, "Press 'U' to login as a user", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, H/2}, 20, 2.0f, BLACK);
     DrawTextEx(OpenSans, "Press 'R' to login as a rider", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, (H/2)+60}, 20, 2.0f, BLACK);
 }
 
 // Function to draw the homepage for users
 void UserHomePage(const std::vector<Item*>& items) {
-    DrawText("Welcome to the Grocery Store!", W/2 - MeasureText("Welcome to the Grocery Store!", 20)/2, 20, 20, BLACK);
+    DrawText("Welcome to the GME: Grocery Made Easy!", W/2 - MeasureText("Welcome to the GME: Grocery Made Easy!", 20)/2, 20, 20, BLACK);
     for (size_t i = 0; i < items.size(); i++) {
         DrawText(items[i]->name.c_str(), 20, 60 + i * 40, 20, BLACK);
     }
@@ -190,12 +212,12 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
 
 
     InitWindow(W, H, "GME: Grocery Made Easy");
-    Category Electronics("Electronics");
-    Category Drinks("Drinks");
-    Item i1("Laptop For Alesh", "Dell", 10, 1000, true, Electronics, 50); // Invalid ID check, Invalid name check
-    Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
-    // This manual entry of items will be replaced by using fstream library and a .txt file.
-    Cart cart;
+//    Category Electronics("Electronics");
+//    Category Drinks("Drinks"); // TODO: Comment this out
+//    Item i1("Laptop For Alesh", "Dell", 10, 1000, true, Electronics, 50); // Invalid ID check, Invalid name check
+//    Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
+//    // This manual entry of items will be replaced by using fstream library and a .txt file.
+//    Cart cart;
     AppState state = MAIN_MENU;
     Font OpenSans = LoadFont("resources/fonts/OpenSans_Regular.ttf"); // Replace with your font file
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -218,7 +240,7 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
                 MainMenu(OpenSans);
                 break;
             case USER_HOME_PAGE:
-                UserHomePage({&i1, &i2});
+//                UserHomePage({&i1, &i2}); TODO: Comment this out!
                 break;
                 // Handle other states as needed
         }
@@ -227,19 +249,34 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
     }
     UnloadFont(OpenSans);
     CloseWindow();
-    i1.display(); // When you click on an item.
-    cart.addItem(&i1);
-    cart.addItem(&i2);
-    cart.addItem(&i2);
-    cart.addItem(&i2); // Shows Item out of stock.
-    i2.display();   // Shows the item details, with quantity as 0 and inStock as false.
-    cart.display();
-    cart.removeItem(&i1);
-    cart.removeItem(&i2);
-    cart.display();
-    i1.display();
-    i2.display();
-    cout << "Total: " << cart.calculateTotal() << endl;
+    try {
+        Category Electronics("Electronics");
+        Category Drinks("Drinks123");
+        Item i1("Laptop For Alesh@", "Dell", 2, -1000, true, Electronics, 500); // Invalid ID check, Invalid name check
+        Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
+        // This manual entry of items will be replaced by using fstream library and a .txt file.
+        Cart cart;
+        i1.display(); // When you click on an item.
+        cart.addItem(&i1);
+        cart.addItem(&i2);
+        cart.addItem(&i2);
+        cart.addItem(&i2); // Shows Item out of stock.
+        i2.display();   // Shows the item details, with quantity as 0 and inStock as false.
+        cart.display();
+        cart.removeItem(&i1);
+        cart.removeItem(&i2);
+        cart.display();
+        i1.display();
+        i2.display();
+
+        cout << "Total: " << cart.calculateTotal() << endl;
+    }
+    catch (runtime_error &e) {
+        cout << e.what() << endl;
+    }
+    catch (exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }
