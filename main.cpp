@@ -173,11 +173,22 @@ void UserHomePage(const std::vector<Item*>& items) {
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
+    ITEM_PAGE,
+    CART_PAGE,
+    CHECKOUT_PAGE,
+    ORDER_CONFIRMATION_PAGE,
+    RIDER_HOME_PAGE,
+
     // Add other states as needed
 };
 
 
 int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
+    // TODO: Pictures of 189x189 icons for items
+    // TODO: 147x147 for the category card, 80x80 img for the category icon png
+
+
+
     InitWindow(W, H, "GME: Grocery Made Easy");
     Category Electronics("Electronics");
     Category Drinks("Drinks");
