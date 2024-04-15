@@ -13,29 +13,31 @@ protected:
     string name;
     vector<Item*> itemsOfCategory;
 public:
-    Category(string n) {
-        bool validName;
-        do {    // Invalid name check
-            validName = true;
-            for(int size_t = 0; size_t < n.length(); size_t++) {
-                if(n[size_t] != ' ') {
-                    if(n[size_t] < 65 || n[size_t] > 122) {
-                        cout << "Invalid name. Please enter the name of "<< n << " again: " << endl;
-                        cin >> n;
-                        validName = false;
-                        break;
-                    }
-                }
-            }
-        } while (!validName);
+    Category(const string& n) {
+        validateName(n);
         name = n;
     }
-    void CategoryPush(Item* i) {
-        itemsOfCategory.push_back(i);
+    void validateName(const string& n) {
+        for (size_t i = 0; i < n.length(); ++i) {
+            if (n[i] != ' ' && (n[i] < 65 || n[i] > 122)) {
+                throw runtime_error("Oops! Invalid name. Please enter alphabets only.");
+            }
+        }
+    }
+
+    void CategoryPush(Item& i) {
+        itemsOfCategory.push_back(&i);
     }
 };
 
 class Item : public Category {
+protected:
+    void validateProductID(int ID) {
+        if (ID <= 0 || ID >= 100) {
+            throw runtime_error("Invalid product ID. Please enter a value between 1 and 99.");
+        }
+        productID = ID;
+    }
 public:
     string name;
     string brandName;
@@ -44,43 +46,14 @@ public:
     int quantityCart = 0;
     float price;
     bool inStock;
-    Item(string n, string bN, int q, float p, bool iS, Category& c, int ID) : Category(name) {
-        while (ID <= 0 || ID >= 100) { // Invalid Product ID check
-            cout << "Invalid ID. Please enter the product ID of "<< n << " again: " << endl;
-            cin >> ID;
-        }
-        productID = ID;
-        bool validName; // Invalid name check
-        do {
-            validName = true;
-            for(int size_t = 0; size_t < n.length(); size_t++) {
-                if(n[size_t] != ' ') {
-                    if(n[size_t] < 65 || n[size_t] > 122) {
-                        cout << "Invalid name. Please enter the name of "<< n << " again: " << endl;
-                        cin >> n;
-                        validName = false;
-                        break;
-                    }
-                }
-            }
-        } while (!validName);
-        name = n;
-
-        bool validBrandName; // Invalid brand name check
-        do {
-            validBrandName = true;
-            for(int size_t = 0; size_t < bN.length(); size_t++) {
-                if(bN[size_t] != ' ') {
-                    if(bN[size_t] < 65 || bN[size_t] > 122) {
-                        cout << "Invalid brand name. Please enter the name of "<< n << " again: " << endl;
-                        getline(cin, bN);
-                        validBrandName = false;
-                        break;
-                    }
-                }
-            }
-        } while (!validBrandName);
+    Item(const string& n, const string& bN, int q, float p, bool iS, Category& c, int ID) : Category(n) {
+        validateName(bN); // Reusing base class validation for brand name (inheriting)
         brandName = bN;
+        validateName(n);
+        name = n;
+        validateProductID(ID);
+        productID = ID;
+
         while (q < 0) { // Invalid quantity check
             cout << "Invalid quantity. Please enter the quantity of "<< n << " again: " << endl;
             cin >> q;
@@ -92,8 +65,8 @@ public:
         }
         price = p;
         inStock = iS;
-
-        c.CategoryPush(this);
+        if(quantity == 0) inStock = false;
+        c.CategoryPush(*this);
     }
     void display() {
         cout << "Product ID: " << productID << "\nItem: " << name << "\nBrand: " << brandName << "\nQuantity: " << quantity << "\nPrice: " << price << "\nIn stock: " << boolalpha << inStock  << endl << endl;
@@ -105,7 +78,7 @@ public:
 
 class Cart {
     vector<Item*> items;
-    public:
+public:
     float calculateTotal() {
         float total = 0;
         for(int i = 0; i< items.size(); i++) {
@@ -141,11 +114,11 @@ class Cart {
                 }
             }
             items.push_back(i);
-                    i->quantity--;
-                    i->quantityCart++;
-                    if (i->quantity == 0) {
-                        i->inStock = false;
-                    }
+            i->quantity--;
+            i->quantityCart++;
+            if (i->quantity == 0) {
+                i->inStock = false;
+            }
         }
         else {
             cout << "Item out of stock." << endl;
@@ -204,7 +177,7 @@ enum AppState {
 };
 
 
-int main() {
+int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
     InitWindow(W, H, "GME: Grocery Made Easy");
     Category Electronics("Electronics");
     Category Drinks("Drinks");
