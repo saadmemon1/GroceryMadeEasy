@@ -185,10 +185,10 @@ void MainMenu(Font& OpenSans) {
 }
 
 // Function to draw the homepage for users
-void UserHomePage(const std::vector<Item*>& items) {
-    DrawText("Welcome to the GME: Grocery Made Easy!", W/2 - MeasureText("Welcome to the GME: Grocery Made Easy!", 20)/2, 20, 20, BLACK);
+void UserHomePage(const std::vector<Item*>& items, Font& OpenSans) {
+    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
     for (size_t i = 0; i < items.size(); i++) {
-        DrawText(items[i]->name.c_str(), 20, 60 + i * 40, 20, BLACK);
+        DrawTextEx(OpenSans, items[i]->name.c_str(), {W/2 - MeasureTextEx(OpenSans, items[i]->name.c_str(), 20, 0).x/2, static_cast<float>(100 + i*50)}, 20, 2.0f, BLACK);
     }
 }
 
@@ -212,12 +212,26 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
 
 
     InitWindow(W, H, "GME: Grocery Made Easy");
-//    Category Electronics("Electronics");
-//    Category Drinks("Drinks"); // TODO: Comment this out
-//    Item i1("Laptop For Alesh", "Dell", 10, 1000, true, Electronics, 50); // Invalid ID check, Invalid name check
-//    Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
-//    // This manual entry of items will be replaced by using fstream library and a .txt file.
-//    Cart cart;
+    // This manual entry of items will be replaced by using fstream library and a .txt file.
+    Category Electronics("Electronics");
+    Category Drinks("Drinks");
+    Item i1("Inspiron Laptop", "Dell", 2, 1000, true, Electronics, 50);
+    Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
+    Cart cart;
+    i1.display(); // When you click on an item.
+    cart.addItem(&i1);
+    cart.addItem(&i2);
+    cart.addItem(&i2);
+    cart.addItem(&i2); // Shows Item out of stock.
+    i2.display();   // Shows the item details, with quantity as 0 and inStock as false.
+    cart.display();
+    cart.removeItem(&i1);
+    cart.removeItem(&i2);
+    cart.display();
+    i1.display();
+    i2.display();
+
+    cout << "Total: " << cart.calculateTotal() << endl;
     AppState state = MAIN_MENU;
     Font OpenSans = LoadFont("resources/fonts/OpenSans_Regular.ttf"); // Replace with your font file
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -240,7 +254,7 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
                 MainMenu(OpenSans);
                 break;
             case USER_HOME_PAGE:
-//                UserHomePage({&i1, &i2}); TODO: Comment this out!
+                UserHomePage({&i1, &i2}, OpenSans);
                 break;
                 // Handle other states as needed
         }
@@ -249,34 +263,15 @@ int main() {    // TODO: ADD TRY AND CATCH FOR EXCEPTIONS!
     }
     UnloadFont(OpenSans);
     CloseWindow();
-    try {
-        Category Electronics("Electronics");
-        Category Drinks("Drinks123");
-        Item i1("Laptop For Alesh@", "Dell", 2, -1000, true, Electronics, 500); // Invalid ID check, Invalid name check
-        Item i2("Soda", "Coca Cola", 2, 1, true, Drinks, 2);
-        // This manual entry of items will be replaced by using fstream library and a .txt file.
-        Cart cart;
-        i1.display(); // When you click on an item.
-        cart.addItem(&i1);
-        cart.addItem(&i2);
-        cart.addItem(&i2);
-        cart.addItem(&i2); // Shows Item out of stock.
-        i2.display();   // Shows the item details, with quantity as 0 and inStock as false.
-        cart.display();
-        cart.removeItem(&i1);
-        cart.removeItem(&i2);
-        cart.display();
-        i1.display();
-        i2.display();
-
-        cout << "Total: " << cart.calculateTotal() << endl;
-    }
-    catch (runtime_error &e) {
-        cout << e.what() << endl;
-    }
-    catch (exception &e) {
-        cout << e.what() << endl;
-    }
+//    try {
+//
+//    }
+//    catch (runtime_error &e) {
+//        cout << e.what() << endl;
+//    }
+//    catch (exception &e) {
+//        cout << e.what() << endl;
+//    }
 
     return 0;
 }
