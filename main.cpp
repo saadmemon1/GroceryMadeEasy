@@ -417,6 +417,12 @@ int main() {
                 state = RIDER_HOME_PAGE;
                 // TODO: Change state to rider homepage
             }
+            if(GetMouseWheelMove() > 0) {
+                if(scrollOffset > 0) scrollOffset -= 10;
+            }
+            if(GetMouseWheelMove() < 0) {
+                if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
+            }
             if(IsKeyDown(KEY_DOWN)) {
                 if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
             }
