@@ -252,14 +252,15 @@ public:
             }
     }
 };
-const int W = 1300, H = 900;
+
+int W = GetMonitorWidth(0), H = GetMonitorHeight(0);
 
 int scrollOffset = 0;
 
 void MainMenu(Font& OpenSans) {
     DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {300 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press 'U' to login as a user", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, H/2}, 20, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press 'R' to login as a rider", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, (H/2)+60}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'U' to login as a user", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, static_cast<float>(H/2)}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'R' to login as a rider", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
 }
 
 // Function to draw the homepage for users
@@ -418,10 +419,10 @@ int main() {
                 // TODO: Change state to rider homepage
             }
             if(GetMouseWheelMove() > 0) {
-                if(scrollOffset > 0) scrollOffset -= 10;
+                if(scrollOffset > 0) scrollOffset -= 20;
             }
             if(GetMouseWheelMove() < 0) {
-                if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
+                if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 20;
             }
             if(IsKeyDown(KEY_DOWN)) {
                 if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
