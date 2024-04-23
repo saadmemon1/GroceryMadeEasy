@@ -1,0 +1,40 @@
+Inspiron 3530 | Core i5 13th Gen 8GB 512GB SSD 15.6 FHD Windows 11 |1 Year Warranty|, Dell,2, 200000, true, Electronics, 1
+Full Cream Milk | 250ml, Olpers, 5, 73, true, Dairy, 2
+Antiseptic Hand Sanitizer | 250ml, Hemani, 10, 450, true, Healthcare, 3
+Cat Food Sea Food | 450g, Morsus, 3, 700, true, PetNeeds, 4
+Paracetamol | 500mg, GSK, 7, 32, true, Pharmacy, 5
+Nivea Men Acne Oil Control Face Wash | 100g, Nivea, 4, 1100, true, Skincare, 6
+Dishwash Liquid With Real Lemon Juice  | Pouch | 450ml, Finish, 6, 275, true, Household, 7
+Maxob Toilet Tissue Roll | Single, Rose Petal, 8, 120, true, EverydayEssentials, 8
+Pepsi | 1.5L, Pepsi, 9, 150, true, Beverages, 9
+Frozen Chicken Nuggets | 500g, Sabroso, 10, 1500, true, FrozenItems, 10
+Soap | 100g, Dove, 11, 250, true, Household, 11
+Toothpaste | 100g, Sensodyne, 12, 400, true, EverydayEssentials, 12
+Milk Chocolate | 100g, Cadbury, 13, 150, true, EverydayEssentials, 13
+Biscuits | 200g, Bake Parlor, 14, 100, true, EverydayEssentials, 14
+Shampoo | 200ml, Dove, 15, 300, true, Skincare, 15
+Conditioner | 200ml, Sun Silk, 16, 300, true, Skincare, 16
+Toilet Cleaner | 500ml, Harpic, 17, 500, true, Household, 17
+Nutella Chocolate Spread | 200g, Nutella, 18, 1000, true, EverydayEssentials, 18
+Coca Cola | 1.5L, Coca Cola, 19, 150, true, Beverages, 19
+Frozen Chicken Fries | 500g, Sabroso, 20, 1500, true, FrozenItems, 20
+Handwash | 250ml, Dettol, 21, 200, true, Healthcare, 21
+Braun Bread | Medium, Dawn, 22, 150, true, EverydayEssentials, 22
+Mozarella Cheese | 200g, Day Fresh, 23, 300, true, Dairy, 23
+Peanut Butter | 200g, American Garden, 24, 700, true, EverydayEssentials, 24
+Lays | 200g, Lays, 25, 200, true, EverydayEssentials, 25
+Butter | 200g, Blue Band, 26, 300, true, Dairy, 26
+Eggs | 1 Dozen, Farm Fresh, 27, 300, true, Dairy, 27
+X3s True Wireless Earbuds | Bluetooth 5.0 | 20H Playtime | IPX5 |, Edifier, 28, 5000, true, Electronics, 28
+S24 Ultra Phone | 6GB 128GB | PTA Approved, Samsung, 29, 500000, true, Electronics, 29
+iPhone 15 Pro Max | 128GB | PTA Approved, Apple, 30, 592000, true, Electronics, 30
+iPhone 14 Pro Max | 256GB | PTA Approved, Apple, 30, 392000, true, Electronics, 31
+MacBook M1 | 256GB | Space Grey, Apple, 32, 230000, true, Electronics, 32
+iPad Pro 2022 | 128GB, Apple, 33, 150000, true, Electronics, 33
+AirPods Pro 2024 | Active Noise Cancellation | Wireless Charging Case, Apple, 34, 50000, true, Electronics, 34
+Apple Watch Series 7 | 45mm | GPS, Apple, 35, 130000, true, Electronics, 35
+Apple Watch SE | 40mm | GPS, Apple, 36, 80000, true, Electronics, 36
+Myteka Tablet | 1 Strip | 10mg, Hilton Pharma, 37, 264, true, Pharmacy, 37
+GSK Calpol 6 Plus Syrup | 90ml, GSK, 38, 110, true, Pharmacy, 38
+GSK Calpol 6 Plus Tablets | 10 Tablets, GSK, 0, 50, false, Pharmacy, 39
+Cornflakes | 500g, Kelloggs, 40, 300, true, EverydayEssentials, 40
