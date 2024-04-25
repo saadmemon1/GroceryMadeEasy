@@ -253,7 +253,7 @@ public:
     }
 };
 
-int W = GetMonitorWidth(0), H = GetMonitorHeight(0);
+int W = 1500, H = 950;
 
 int scrollOffset = 0;
 
@@ -333,9 +333,9 @@ int main() {
         string line;
         while (getline(file, line)) {
             vector<string> parts = split(line, ',');
-            for (string &part : parts) {
-                part = trim(part);
-            }
+//            for (string &part : parts) {
+//                part = trim(part);
+//            }
             string name = parts[0];
             string brandName = parts[1];
             int quantity = stoi(parts[2]);
