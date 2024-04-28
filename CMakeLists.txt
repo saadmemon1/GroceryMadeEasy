@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(GROCERYMADEEASY_SOURCES main.cpp)
 add_executable(GroceryMadeEasy ${GROCERYMADEEASY_SOURCES})
-set(RAYLIB_DIR "${CMAKE_SOURCE_DIR}/raylib/4.5.0")
+set(RAYLIB_DIR "${CMAKE_SOURCE_DIR}/raylib/5.0")
 
 target_include_directories(GroceryMadeEasy PRIVATE "${RAYLIB_DIR}/include")
 target_link_directories(GroceryMadeEasy PRIVATE "${RAYLIB_DIR}/lib")

@@ -1,4 +1,4 @@
-prefix=/opt/homebrew/Cellar/raylib/4.5.0
+prefix=/opt/homebrew/Cellar/raylib/5.0
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: raylib
 Description: A simple and easy-to-use library to enjoy videogames programming
 URL: https://github.com/raysan5/raylib
-Version: 4.2.0
+Version: 4.5.0
 Libs: -L"${libdir}" -lraylib 
 Libs.private: 
 Requires.private: 

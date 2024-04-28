@@ -1,5 +1,5 @@
 {
-  "homebrew_version": "4.1.13-53-g92d2cec",
+  "homebrew_version": "4.1.20-49-gbd2c979",
   "used_options": [
 
   ],
@@ -14,8 +14,8 @@
   "changed_files": [
     "lib/pkgconfig/raylib.pc"
   ],
-  "time": 1697822852,
-  "source_modified_time": 1679157424,
+  "time": 1714310102,
+  "source_modified_time": 1700044250,
   "compiler": "clang",
   "aliases": [
 
@@ -26,7 +26,7 @@
   "source": {
     "spec": "stable",
     "versions": {
-      "stable": "4.5.0",
+      "stable": "5.0",
       "head": null,
       "version_scheme": 0
     },
