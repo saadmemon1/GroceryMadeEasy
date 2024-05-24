@@ -274,33 +274,15 @@ void UserHomePage(const std::vector<Item>& items, Font& OpenSans) {
     }
 }
 
-bool LoginPage(const map<string,string>& users, Font& OpenSans) {
-//    string username;
-//    string password;
-//    char name[10+1] = "\0";      // NOTE: One extra space required for null terminator char '\0'
-//    int letterCount = 0;
-
-    Rectangle textBox = { W/2.0f - 100, 180, 225, 50 };
-    bool mouseOnText = false;
-//
-//    int framesCounter = 0;
-//    for(const auto &s : m) {
-//        if(s.first == username) {
-//            if(s.second == password) {
-//                return true;
-//            }
-//        }
-//    }
-//    return false;
-
-
+bool LoginPage(const map<string,string>& users, Font &OpenSans) {
     std::string usernameInput = "";
     std::string passwordInput = "";
     Rectangle usernameRec = { 200, 200, 300, 50 };
     Rectangle passwordRec = { 200, 300, 300, 50 };
 
+    while (!WindowShouldClose()) {
         // Update
-        int key = GetKeyPressed();
+        int key = GetCharPressed();
 
         // Check if a key has been pressed
         if (key >= 32 && key <= 125) {
@@ -311,23 +293,28 @@ bool LoginPage(const map<string,string>& users, Font& OpenSans) {
             }
         }
 
+        // Draw
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // Draw the textboxes
         DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
         DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
 
+        // Draw the input text
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
 
-        for(const auto &s : users) {
-        if(s.first == usernameInput) {
-            if(s.second == passwordInput) {
-                return true;
-            }
+        EndDrawing();
+
+        // Check if the input username and password match a pair in the map
+        auto it = users.find(usernameInput);
+        if (it != users.end() && it->second == passwordInput) {
+            return true;
         }
     }
     return false;
-
 }
-
 
 //class SignUpPage {
 //private:
