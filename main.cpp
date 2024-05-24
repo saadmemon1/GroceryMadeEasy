@@ -262,8 +262,8 @@ int scrollOffset = 0;
 
 void MainMenu(Font& OpenSans) {
     DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {(W/2)-20 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press 'U' to login as a user", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, static_cast<float>(H/2)}, 20, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press 'R' to login as a rider", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'U' to login", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, static_cast<float>(H/2)}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'S' to sign up!", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
 }
 
 // Function to draw the homepage for users
@@ -275,8 +275,75 @@ void UserHomePage(const std::vector<Item>& items, Font& OpenSans) {
 }
 
 bool LoginPage(const map<string,string>& users, Font &OpenSans) {
-    std::string usernameInput = "";
-    std::string passwordInput = "";
+    string usernameInput = "";
+    string passwordInput = "";
+    Rectangle usernameRec = { 200, 200, 300, 50 };
+    Rectangle passwordRec = { 200, 300, 300, 50 };
+
+    while (!WindowShouldClose()) {
+        // Update
+        int key = GetCharPressed();
+
+        // Check if a key has been pressed
+        if (key >= 32 && key <= 125) {
+            if (CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+                usernameInput += (char)key;
+            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+                passwordInput += (char)key;
+            }
+        }
+
+        // Check if Enter key has been pressed
+        if (IsKeyPressed(KEY_ENTER)) {
+            // Check if the input username and password match a pair in the map
+            auto it = users.find(usernameInput);
+            if (it != users.end() && it->second == passwordInput) {
+                return true;
+            } else {
+                // Display error message
+                DrawText("Invalid username or password. Please try again.", 200, 400, 20, RED);
+                // Clear input boxes
+                usernameInput = "";
+                passwordInput = "";
+            }
+        }
+
+        // Draw
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // Draw the textboxes
+        DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
+        DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
+
+        // Draw the input text
+        DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
+        DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
+
+        EndDrawing();
+    }
+    return false;
+}
+
+bool isValidPassword(const string & password){
+    if (password.length() <= 6){
+        return false;
+    }
+    for (auto const &c: password){
+        if (!isdigit(c) && !isalpha(c) && !ispunct(c)){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isValidUsername(const string& username) {
+    return username.length() >= 5;
+}
+
+void createSignUpPage(map<string, string>& users, Font& OpenSans) {
+    string usernameInput = "";
+    string passwordInput = "";
     Rectangle usernameRec = { 200, 200, 300, 50 };
     Rectangle passwordRec = { 200, 300, 300, 50 };
 
@@ -307,94 +374,25 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
 
         EndDrawing();
 
-        // Check if the input username and password match a pair in the map
-        auto it = users.find(usernameInput);
-        if (it != users.end() && it->second == passwordInput) {
-            return true;
+
+        if (users.find(usernameInput) != users.end()) {
+            cout << "Username already exists, try a different one.\n";  // TODO: Replace with DrawTextEx
+            usernameInput = "";
+            continue;
         }
-    }
-    return false;
-}
 
-//class SignUpPage {
-//private:
-//    string username;
-//    string password;
-//
-//    bool isValidPassword(const string& password) {
-//        if (password.length() <= 6) {
-//            return false;
-//        }
-//
-//        if (none_of(password.begin(), password.end(), ::isdigit)) {
-//            return false;
-//        }
-//
-//        if (none_of(password.begin(), password.end(), ::isalpha)) {
-//            return false;
-//        }
-//
-//        string special_chars = "!@#$%^&*()-+?_=,<>/";
-//        if (none_of(password.begin(), password.end(), [&](char c) {
-//            return special_chars.find(c) != string::npos;
-//        })) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
-//    bool isValidUsername(const string& username) {
-//        return username.length() >= 5;
-//    }
-//
-//public:
-//    SignUpPage(string username, string password) {
-//        if (!isValidUsername(username)) {
-//            throw invalid_argument("Username must be at least 5 characters long.");
-//        }
-//
-//        if (!isValidPassword(password)) {
-//            throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
-//        }
-//
-//        this->username = username;
-//        this->password = password;
-//    }
-//
-//    string getUsername() const {
-//        return username;
-//    }
-//
-//    string getPassword() const {
-//        return password;
-//    }
-//};
-
-bool isValidPassword(const string & password){
-    if (password.length() <= 6){
-        return false;
-    }
-    for (auto const &c: password){
-        if (!isdigit(c) && !isalpha(c) && !ispunct(c)){
-            return false;
+        if (!isValidUsername(usernameInput)) {
+            throw invalid_argument("Username must be at least 5 characters long.");
         }
-    }
-    return true;
-}
-bool isValidUsername(const string& username) {
-    return username.length() >= 5;
-}
-void createSignUpPage(string username, string password) {
-    if (!isValidUsername(username)) {
-        throw invalid_argument("Username must be at least 5 characters long.");
-    }
-    if (!isValidPassword(password)) {
-        throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
-    }
-    cout << "User " << username << " with password " << password << " created successfully.\n";
-}
+        if (!isValidPassword(passwordInput)) {
+            throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
+        }
 
+        users[usernameInput] = passwordInput;
+        cout << "User " << usernameInput << " with password " << passwordInput << " created successfully.\n";
+        break; // Exit the loop
+    }
+}
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
