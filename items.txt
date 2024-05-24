@@ -2,7 +2,7 @@ Inspiron 3530 | Core i5 13th Gen 8GB 512GB SSD 15.6 FHD Windows 11 |1 Year Warra
 Full Cream Milk | 250ml,Olpers,5,73,true,Dairy,2
 Antiseptic Hand Sanitizer | 250ml,Hemani,10,450,true,Healthcare,3
 Cat Food Sea Food | 450g,Morsus,3,700,true,PetNeeds,4
-Paracetamol | 500mg,GSK,7,32,true,Pharmacy,5
+Panadol | 500mg,GSK,7,32,true,Pharmacy,5
 Nivea Men Acne Oil Control Face Wash | 100g,Nivea,4,1100,true,Skincare,6
 Dishwash Liquid With Real Lemon Juice  | Pouch | 450ml,Finish,6,275,true,Household,7
 Maxob Toilet Tissue Roll | Single,Rose Petal,8,120,true,EverydayEssentials,8
@@ -11,7 +11,7 @@ Frozen Chicken Nuggets | 500g,Sabroso,10,1500,true,FrozenItems,10
 Soap | 100g,Dove,11,250,true,Household,11
 Toothpaste | 100g,Sensodyne,12,400,true,EverydayEssentials,12
 Milk Chocolate | 100g,Cadbury,13,150,true,EverydayEssentials,13
-Biscuits | 200g,Bake Parlor,14,100,true,EverydayEssentials,14
+Chocolate Sandwich Biscuits | 16 snack packs,Peak Freans,14,100,true,EverydayEssentials,14
 Shampoo | 200ml,Dove,15,300,true,Skincare,15
 Conditioner | 200ml,Sun Silk,16,300,true,Skincare,16
 Toilet Cleaner | 500ml,Harpic,17,500,true,Household,17
@@ -19,7 +19,7 @@ Nutella Chocolate Spread | 200g,Nutella,18,1000,true,EverydayEssentials,18
 Coca Cola | 1.5L,Coca Cola,19,150,true,Beverages,19
 Frozen Chicken Fries | 500g,Sabroso,20,1500,true,FrozenItems,20
 Handwash | 250ml,Dettol,21,200,true,Healthcare,21
-Braun Bread | Medium,Dawn,22,150,true,EverydayEssentials,22
+Bran Bread | Medium,Dawn,22,150,true,EverydayEssentials,22
 Mozarella Cheese | 200g,Day Fresh,23,300,true,Dairy,23
 Peanut Butter | 200g,American Garden,24,700,true,EverydayEssentials,24
 Lays | 200g,Lays,25,200,true,EverydayEssentials,25
