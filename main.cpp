@@ -275,6 +275,86 @@ void LoginPage() {
 
 }
 
+
+//class SignUpPage {
+//private:
+//    string username;
+//    string password;
+//
+//    bool isValidPassword(const string& password) {
+//        if (password.length() <= 6) {
+//            return false;
+//        }
+//
+//        if (none_of(password.begin(), password.end(), ::isdigit)) {
+//            return false;
+//        }
+//
+//        if (none_of(password.begin(), password.end(), ::isalpha)) {
+//            return false;
+//        }
+//
+//        string special_chars = "!@#$%^&*()-+?_=,<>/";
+//        if (none_of(password.begin(), password.end(), [&](char c) {
+//            return special_chars.find(c) != string::npos;
+//        })) {
+//            return false;
+//        }
+//
+//        return true;
+//    }
+//
+//    bool isValidUsername(const string& username) {
+//        return username.length() >= 5;
+//    }
+//
+//public:
+//    SignUpPage(string username, string password) {
+//        if (!isValidUsername(username)) {
+//            throw invalid_argument("Username must be at least 5 characters long.");
+//        }
+//
+//        if (!isValidPassword(password)) {
+//            throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
+//        }
+//
+//        this->username = username;
+//        this->password = password;
+//    }
+//
+//    string getUsername() const {
+//        return username;
+//    }
+//
+//    string getPassword() const {
+//        return password;
+//    }
+//};
+
+bool isValidPassword(const string & password){
+    if (password.length() <= 6){
+        return false;
+    }
+    for (auto const &c: password){
+        if (!isdigit(c) && !isalpha(c) && !ispunct(c)){
+            return false;
+        }
+    }
+    return true;
+}
+bool isValidUsername(const string& username) {
+    return username.length() >= 5;
+}
+void createSignUpPage(string username, string password) {
+    if (!isValidUsername(username)) {
+        throw invalid_argument("Username must be at least 5 characters long.");
+    }
+    if (!isValidPassword(password)) {
+        throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
+    }
+    cout << "User " << username << " with password " << password << " created successfully.\n";
+}
+
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
@@ -284,7 +364,7 @@ enum AppState {
     CART_PAGE,
     CHECKOUT_PAGE,
     ORDER_CONFIRMATION_PAGE,
-//    RIDER_HOME_PAGE,
+//  RIDER_HOME_PAGE,
 
     // Add other states as needed
 };
