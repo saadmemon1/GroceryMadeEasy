@@ -6,6 +6,9 @@
 #include <sstream>
 #include <stdexcept>
 #include <cctype>
+#include <map>
+#include <cctype>
+#include <algorithm>
 using namespace std;
 
 class InvalidNumberException : public exception {
@@ -271,7 +274,58 @@ void UserHomePage(const std::vector<Item>& items, Font& OpenSans) {
     }
 }
 
-void LoginPage() {
+bool LoginPage(const map<string,string>& users, Font& OpenSans) {
+//    string username;
+//    string password;
+//    char name[10+1] = "\0";      // NOTE: One extra space required for null terminator char '\0'
+//    int letterCount = 0;
+
+    Rectangle textBox = { W/2.0f - 100, 180, 225, 50 };
+    bool mouseOnText = false;
+//
+//    int framesCounter = 0;
+//    for(const auto &s : m) {
+//        if(s.first == username) {
+//            if(s.second == password) {
+//                return true;
+//            }
+//        }
+//    }
+//    return false;
+
+
+    std::string usernameInput = "";
+    std::string passwordInput = "";
+    Rectangle usernameRec = { 200, 200, 300, 50 };
+    Rectangle passwordRec = { 200, 300, 300, 50 };
+
+        // Update
+        int key = GetKeyPressed();
+
+        // Check if a key has been pressed
+        if (key >= 32 && key <= 125) {
+            if (CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+                usernameInput += (char)key;
+            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+                passwordInput += (char)key;
+            }
+        }
+
+        DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
+        DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
+
+        DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
+        DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
+
+        EndDrawing();
+
+        if (users.find(usernameInput) != users.end() && users[usernameInput] == passwordInput) {
+            cout << "Login successful!" << endl;
+            return true;
+        } else if (users.find(usernameInput) != users.end() && users[usernameInput] != passwordInput) {
+            cout << "Login failed!" << endl;
+            return false;
+        }
 
 }
 
@@ -385,8 +439,8 @@ int main() {
 
 
     try {
-    InitWindow(W, H, "GME: Grocery Made Easy");
-    // This manual entry of items will be replaced by using fstream library and a .txt file.
+        InitWindow(W, H, "GME: Grocery Made Easy");
+        // This manual entry of items will be replaced by using fstream library and a .txt file.
 
         Category Electronics("Electronics");
         Category Dairy("Dairy");
@@ -414,6 +468,7 @@ int main() {
             Item item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(item);
         }
+        map<string,string> users;   //TODO: Update this
 
         Cart cart;
 
@@ -423,57 +478,70 @@ int main() {
         {
             // Update
             if (IsKeyPressed(KEY_U)) {
-                state = USER_HOME_PAGE;
-            } else if (IsKeyPressed(KEY_R)) {
-                state = RIDER_HOME_PAGE;
-                // TODO: Change state to rider homepage
+                state = LOGIN_PAGE;
             }
-            if(GetMouseWheelMove() > 0) {
-                if(scrollOffset > 0) scrollOffset -= 20;
+            else if (IsKeyPressed(KEY_S)) {
+                state = SIGNUP_PAGE;
             }
-            if(GetMouseWheelMove() < 0) {
-                if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 20;
+            if(state == LOGIN_PAGE && IsKeyPressed(KEY_S)) {
+                state = SIGNUP_PAGE;
             }
-            if(IsKeyDown(KEY_DOWN)) {
-                if(scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
-            }
-            if(IsKeyDown(KEY_UP)) {
-                if(scrollOffset > 0) scrollOffset -= 10;
+            if(state == SIGNUP_PAGE && IsKeyPressed(KEY_U)) {
+                state = LOGIN_PAGE;
             }
 
-            // Draw
-            BeginDrawing();
+//            } else if (IsKeyPressed(KEY_R)) {
+//                state = RIDER_HOME_PAGE;
+//                // TODO: Change state to rider homepage
+//            }
+                if (GetMouseWheelMove() > 0) {
+                    if (scrollOffset > 0) scrollOffset -= 20;
+                }
+                if (GetMouseWheelMove() < 0) {
+                    if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 20;
+                }
+                if (IsKeyDown(KEY_DOWN)) {
+                    if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
+                }
+                if (IsKeyDown(KEY_UP)) {
+                    if (scrollOffset > 0) scrollOffset -= 10;
+                }
 
-            ClearBackground(LIGHTGRAY);
+                // Draw
+                BeginDrawing();
 
-            // Draw the appropriate screen based on the current state
-            switch (state) {
-                case MAIN_MENU:
-                    MainMenu(OpenSans);
-                    break;
-                case USER_HOME_PAGE:
-                    UserHomePage(items, OpenSans);
-                    break;
-                    // Handle other states as needed
+                ClearBackground(LIGHTGRAY);
+
+                // Draw the appropriate screen based on the current state
+                switch (state) {
+                    case MAIN_MENU:
+                        MainMenu(OpenSans);
+                        break;
+                    case USER_HOME_PAGE:
+                        UserHomePage(items, OpenSans);
+                        break;
+                    case LOGIN_PAGE:
+                        LoginPage(users, OpenSans);
+                        // Handle other states as needed
+                }
+
+                EndDrawing();
             }
-
-            EndDrawing();
+            UnloadFont(OpenSans);
+            CloseWindow();
         }
-        UnloadFont(OpenSans);
-        CloseWindow();
-    }
-    catch (const CustomException& e) {
-        cout  << e.what() << endl;
-    }
-    catch(const InvalidNumberException& e) {
-        cout << e.what() << endl;
-    }
-    catch (const std::exception& e) {
-        cout << "Caught an exception: " << e.what() << endl;
-    }
-    catch (...) {
-        cout << "Caught an unknown exception." << endl;
-    }
+        catch (const CustomException &e) {
+            cout << e.what() << endl;
+        }
+        catch(const InvalidNumberException &e) {
+            cout << e.what() << endl;
+        }
+        catch (const std::exception &e) {
+            cout << "Caught an exception: " << e.what() << endl;
+        }
+        catch (...) {
+            cout << "Caught an unknown exception." << endl;
+        }
 
-    return 0;
-}
+        return 0;
+    }
