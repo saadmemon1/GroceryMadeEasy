@@ -356,7 +356,7 @@ bool isValidUsername(const string& username) {
 void createSignUpPage(map<string, string>& users, Font& OpenSans) {
     string usernameInput = "";
     string passwordInput = "";
-    Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 50), 300, 50 };
+    Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
     Rectangle passwordRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2), 300, 50 };
 
     while (!WindowShouldClose()) {
@@ -366,9 +366,9 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
         // Check if a key has been pressed
         if (key >= 32 && key <= 125) {
             if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
-                usernameInput += (char)key;
+                usernameInput += (char) key;
             } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
-                passwordInput += (char)key;
+                passwordInput += (char) key;
             }
         }
 
@@ -381,34 +381,44 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
         DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
 
         // Draw the input text
-        DrawTextEx(OpenSans, "Enter a username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter a username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
-        DrawTextEx(OpenSans, "Enter a password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter a password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "Enter a username:",
+                   {usernameRec.x - MeasureTextEx(OpenSans, "Enter a username:", 30, 0).x, usernameRec.y - 40}, 30,
+                   2.0f, BLACK);
+        DrawTextEx(OpenSans, "Enter a password:",
+                   {passwordRec.x - MeasureTextEx(OpenSans, "Enter a password:", 30, 0).x, passwordRec.y - 40}, 30,
+                   2.0f, BLACK);
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
 
         EndDrawing();
 
 
-        if (users.find(usernameInput) != users.end()) {
-            DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
-            usernameInput = "";
-            continue;
-        }
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (users.find(usernameInput) != users.end()) {
+                DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
+                usernameInput = "";
+                passwordInput = "";
+                continue;
+            }
 
-        if (!isValidUsername(usernameInput)) {
-            DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
-            usernameInput = "";
-            continue;
-        }
-        if (!isValidPassword(passwordInput)) {
-            DrawTextEx(OpenSans, "Password must be at least 6 characters long and contain at least one digit, one letter, and one special character.", {200, 500}, 30, 2.0f, RED);
-            passwordInput = "";
-            continue;
-        }
+            if (!isValidUsername(usernameInput)) {
+                DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
+                usernameInput = "";
+                passwordInput = "";
+                continue;
+            }
+            if (!isValidPassword(passwordInput)) {
+                DrawTextEx(OpenSans,
+                           "Password must be at least 6 characters long and contain at least one digit, one letter, and one special character.",
+                           {200, 500}, 30, 2.0f, RED);
+                passwordInput = "";
+                continue;
+            }
 
-        users.insert({usernameInput, passwordInput});
-        DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
-        break; // Exit the loop
+            users.insert({usernameInput, passwordInput});
+            DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
+            break; // Exit the loop
+        }
     }
 }
 enum AppState {
