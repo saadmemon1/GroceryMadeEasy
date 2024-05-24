@@ -317,15 +317,14 @@ bool LoginPage(const map<string,string>& users, Font& OpenSans) {
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
 
-        EndDrawing();
-
-        if (users.find(usernameInput) != users.end() && users[usernameInput] == passwordInput) {
-            cout << "Login successful!" << endl;
-            return true;
-        } else if (users.find(usernameInput) != users.end() && users[usernameInput] != passwordInput) {
-            cout << "Login failed!" << endl;
-            return false;
+        for(const auto &s : users) {
+        if(s.first == usernameInput) {
+            if(s.second == passwordInput) {
+                return true;
+            }
         }
+    }
+    return false;
 
 }
 
