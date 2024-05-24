@@ -284,7 +284,7 @@ enum AppState {
     CART_PAGE,
     CHECKOUT_PAGE,
     ORDER_CONFIRMATION_PAGE,
-    RIDER_HOME_PAGE,
+//    RIDER_HOME_PAGE,
 
     // Add other states as needed
 };
