@@ -286,27 +286,25 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
 
         // Check if a key has been pressed
         if (key >= 32 && key <= 125) {
-            if (CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+            if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
                 usernameInput += (char)key;
-            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
                 passwordInput += (char)key;
             }
         }
-
-        // Check if Enter key has been pressed
-        if (IsKeyPressed(KEY_ENTER)) {
-            // Check if the input username and password match a pair in the map
-            auto it = users.find(usernameInput);
-            if (it != users.end() && it->second == passwordInput) {
-                return true;
-            } else {
-                // Display error message
-                DrawText("Invalid username or password. Please try again.", 200, 400, 20, RED);
-                // Clear input boxes
+        // Check if ESC key has been pressed
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            if (usernameInput.empty() && passwordInput.empty()) {
+                CloseWindow();
+                break;
+            }
+            else {
                 usernameInput = "";
                 passwordInput = "";
             }
         }
+        // Check if Enter key has been pressed
+
 
         // Draw
         BeginDrawing();
@@ -319,6 +317,20 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         // Draw the input text
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
+
+        if (IsKeyPressed(KEY_ENTER)) {
+            // Check if the input username and password match a pair in the map
+            auto it = users.find(usernameInput);
+            if (it != users.end() && it->second == passwordInput) {
+                return true;
+            } else {
+                // Display error message
+                DrawText("Invalid username or password. Please try again.", 200, 400, 40, RED);
+                // Clear input boxes
+                usernameInput = "";
+                passwordInput = "";
+            }
+        }
 
         EndDrawing();
     }
@@ -344,8 +356,8 @@ bool isValidUsername(const string& username) {
 void createSignUpPage(map<string, string>& users, Font& OpenSans) {
     string usernameInput = "";
     string passwordInput = "";
-    Rectangle usernameRec = { 200, 200, 300, 50 };
-    Rectangle passwordRec = { 200, 300, 300, 50 };
+    Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 50), 300, 50 };
+    Rectangle passwordRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2), 300, 50 };
 
     while (!WindowShouldClose()) {
         // Update
@@ -353,9 +365,9 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
 
         // Check if a key has been pressed
         if (key >= 32 && key <= 125) {
-            if (CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+            if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
                 usernameInput += (char)key;
-            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
                 passwordInput += (char)key;
             }
         }
@@ -369,6 +381,8 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
         DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
 
         // Draw the input text
+        DrawTextEx(OpenSans, "Enter a username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter a username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "Enter a password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter a password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
 
@@ -376,20 +390,24 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
 
 
         if (users.find(usernameInput) != users.end()) {
-            cout << "Username already exists, try a different one.\n";  // TODO: Replace with DrawTextEx
+            DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
             usernameInput = "";
             continue;
         }
 
         if (!isValidUsername(usernameInput)) {
-            throw invalid_argument("Username must be at least 5 characters long.");
+            DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
+            usernameInput = "";
+            continue;
         }
         if (!isValidPassword(passwordInput)) {
-            throw invalid_argument("Password must be longer than 6 characters, contain at least one digit, one letter, and one special character.");
+            DrawTextEx(OpenSans, "Password must be at least 6 characters long and contain at least one digit, one letter, and one special character.", {200, 500}, 30, 2.0f, RED);
+            passwordInput = "";
+            continue;
         }
 
-        users[usernameInput] = passwordInput;
-        cout << "User " << usernameInput << " with password " << passwordInput << " created successfully.\n";
+        users.insert({usernameInput, passwordInput});
+        DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
         break; // Exit the loop
     }
 }
@@ -473,6 +491,10 @@ int main() {
             if(state == SIGNUP_PAGE && IsKeyPressed(KEY_U)) {
                 state = LOGIN_PAGE;
             }
+            if (state == LOGIN_PAGE && !LoginPage(users, OpenSans)) {
+                CloseWindow();  // Close the window when LoginPage returns false
+                break;  // Break the loop to end the program
+            }
 
 //            } else if (IsKeyPressed(KEY_R)) {
 //                state = RIDER_HOME_PAGE;
@@ -505,8 +527,11 @@ int main() {
                         UserHomePage(items, OpenSans);
                         break;
                     case LOGIN_PAGE:
-                        LoginPage(users, OpenSans);
+                        if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
+                        else state = MAIN_MENU;
                         // Handle other states as needed
+                    case SIGNUP_PAGE:
+                        createSignUpPage(users, OpenSans);
                 }
 
                 EndDrawing();
