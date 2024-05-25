@@ -264,15 +264,41 @@ int scrollOffset = 0;
 void MainMenu(Font& OpenSans) {
     DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {(W/2)-20 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
     DrawTextEx(OpenSans, "Press 'U' to login", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, static_cast<float>(H/2)}, 20, 2.0f, BLACK);
-    DrawTextEx(OpenSans, "Press 'S' to sign up!", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
+    DrawTextEx(OpenSans, "Press 'S' to sign up", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
 }
 
 // Function to draw the homepage for users
 void UserHomePage(const std::vector<Item>& items, Font& OpenSans) {
     DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
+
+    int itemsPerRow = 3;
+    int itemWidth = W / itemsPerRow;
+    int itemHeight = 200; // Adjust as needed
+    int spacing = 10;
+
     for (size_t i = 0; i < items.size(); i++) {
-        DrawTextEx(OpenSans, items[i].name.c_str(), {W/2 - MeasureTextEx(OpenSans, items[i].name.c_str(), 30, 0).x/2, static_cast<float>(100 + i*50 - scrollOffset)}, 30, 2.0f, BLACK);
+        int row = i / itemsPerRow;
+        int col = i % itemsPerRow;
+
+        int x = col * itemWidth + spacing;
+        int y = 100 + row * itemHeight - scrollOffset + spacing;
+
+        // Load the image for the item
+        // Make sure the image file exists in your project directory
+        // Draw the image
+        Texture2D texture = LoadTexture(("resources/images/" + std::to_string(items[i].productID) + ".png").c_str());
+        if (texture.id == 0) {
+            std::cout << "Failed to load texture for item " << items[i].productID << std::endl;
+            continue;
+        }
+        DrawTexture(texture, x, y, WHITE);
+
+        // Draw the item's name and price below the image
+        DrawTextEx(OpenSans, items[i].name.c_str(), {static_cast<float>(x), static_cast<float>(y + texture.height + spacing)}, 20, 2.0f, BLACK);
+        DrawTextEx(OpenSans, ("Price: PKR " + std::to_string(items[i].price)).c_str(), {static_cast<float>(x), static_cast<float>(y + texture.height + 2 * spacing + 20)}, 20, 2.0f, BLACK);
+
     }
+
 }
 
 bool LoginPage(const map<string,string>& users, Font &OpenSans) {

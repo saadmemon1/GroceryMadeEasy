@@ -1,4 +1,4 @@
-Inspiron 3530 | Core i5 13th Gen 8GB 512GB SSD 15.6 FHD Windows 11 |1 Year Warranty|,Dell,2,200000,true,Electronics,1
+Inspiron 3530,Dell,2,200000,true,Electronics,1
 Full Cream Milk | 250ml,Olpers,5,73,true,Dairy,2
 Antiseptic Hand Sanitizer | 250ml,Hemani,10,450,true,Healthcare,3
 Cat Food Sea Food | 450g,Morsus,3,700,true,PetNeeds,4
