@@ -582,6 +582,9 @@ int main() {
                     case USER_HOME_PAGE:
                         UserHomePage(items, OpenSans);
                         break;
+                    case ORDER_CONFIRMATION_PAGE:
+                        OrderConfirmationPage(cart, OpenSans);
+                        break;
                     case LOGIN_PAGE:
                         if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
                         else state = MAIN_MENU;
