@@ -493,6 +493,7 @@ bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
     }
     return false;
 }
+
 bool CheckoutPage(Font& OpenSans) {
     string addressInput = "";
     Rectangle addressRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
