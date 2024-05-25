@@ -332,21 +332,6 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
             return true;
         }
 
-//        if (IsKeyPressed(KEY_ENTER)) {
-//            auto it = users.find(usernameInput);
-//            if (it == users.end()) {
-//                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
-//                usernameInput = "";
-//                passwordInput = "";
-//                return false;
-//            }
-//            if (it->second != passwordInput) {
-//                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
-//                passwordInput = "";
-//                return false;
-//            }
-//            return true;
-//        }
         EndDrawing();
         if(IsKeyPressed(KEY_BACKSPACE)){
             if(CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
@@ -486,13 +471,12 @@ bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
-    SIGNUP_PAGE,
-    LOGIN_PAGE,
+    SIGNUP_PAGE,    // TODO: Fix the drawTextEx
+    LOGIN_PAGE, // TODO: Fix the drawTextEx
     ITEM_PAGE,
     CART_PAGE,
     CHECKOUT_PAGE,
     ORDER_CONFIRMATION_PAGE,
-//  RIDER_HOME_PAGE,
 
     // Add other states as needed
 };
@@ -514,18 +498,6 @@ int main() {
 
     try {
         InitWindow(W, H, "GME: Grocery Made Easy");
-        // This manual entry of items will be replaced by using fstream library and a .txt file.
-
-//        Category Electronics("Electronics");
-//        Category Dairy("Dairy");
-//        Category Healthcare("Healthcare");
-//        Category PetNeeds("Pet Needs");
-//        Category Pharmacy("Pharmacy");
-//        Category Skincare("Skincare");
-//        Category Household("Household and Cleaning Supplies");
-//        Category EverydayEssentials("Everyday Essentials");
-//        Category Beverages("Beverages");
-//        Category FrozenItems("Frozen Items");
 
         vector<Category> categories;
         ifstream cat("categories.txt");
@@ -551,7 +523,7 @@ int main() {
             items.push_back(item);
         }
 
-        map<string,string> users;   //TODO: Update this
+        map<string,string> users;
         ifstream file2("usersdb.csv");
         string line2;
         while (getline(file2, line2)) {
