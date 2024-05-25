@@ -467,7 +467,55 @@ bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
     }
     return false;
 }
+bool CheckoutPage(Font& OpenSans) {
+    string addressInput = "";
+    Rectangle addressRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
 
+    while (!WindowShouldClose()) {
+        // Update
+        int key = GetCharPressed();
+
+        // Check if a key has been pressed
+        if ((key >= 32 && key <= 126)) { // ASCII values for printable characters
+            if (CheckCollisionPointRec(GetMousePosition(), addressRec) && addressInput.length() < 50) {
+                addressInput += (char) key;
+            }
+        }
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            return false;
+        }
+
+        // Draw
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // Draw the textbox
+        DrawRectangleLines(addressRec.x, addressRec.y, addressRec.width, addressRec.height, DARKGRAY);
+
+        // Draw the input text
+        DrawTextEx(OpenSans, "Enter your address:",
+                   {addressRec.x - MeasureTextEx(OpenSans, "Enter your address:", 30, 0).x, addressRec.y - 40}, 30,
+                   2.0f, BLACK);
+        DrawText(addressInput.c_str(), addressRec.x + 5, addressRec.y + 5, 40, BLACK);
+
+        if (IsKeyPressed(KEY_ENTER) && addressInput.length() > 0) {
+            DrawTextEx(OpenSans, "Your order will be delivered in 3-5 working days.", {200, 500}, 30, 2.0f, GREEN);
+            EndDrawing();
+            return true; // Exit the loop
+        }
+
+        EndDrawing();
+
+        if(IsKeyPressed(KEY_BACKSPACE)){
+            if(CheckCollisionPointRec(GetMousePosition(), addressRec)) {
+                if (addressInput.length() > 0) {
+                    addressInput.pop_back();
+                }
+            }
+        }
+    }
+    return false;
+}
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
@@ -590,6 +638,9 @@ int main() {
                     break;
                 case ORDER_CONFIRMATION_PAGE:
                     OrderConfirmationPage(cart, OpenSans);
+                    break;
+                    case CHECKOUT_PAGE:
+                    if(CheckoutPage(OpenSans)) state = ORDER_CONFIRMATION_PAGE;
                     break;
                 case LOGIN_PAGE:
                     if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
