@@ -236,22 +236,22 @@ public:
             cout << "Cart is empty." << endl;
             return;
         }
-            for (size_t i = 0; i < items.size(); i++) {
-                if (items[i]->productID == item->productID) {
-                    if(items[i]->quantityCart > 1) {
-                        items[i]->quantityCart--;
-                        items[i]->quantity++;
-                        item->inStock = true;
-                    }
-                    else {
-                        item->quantity++;
-                        item->quantityCart--;
-                        item->inStock = true;
-                        items.erase(items.begin() + i);
-                        return;
-                    }
+        for (size_t i = 0; i < items.size(); i++) {
+            if (items[i]->productID == item->productID) {
+                if(items[i]->quantityCart > 1) {
+                    items[i]->quantityCart--;
+                    items[i]->quantity++;
+                    item->inStock = true;
+                }
+                else {
+                    item->quantity++;
+                    item->quantityCart--;
+                    item->inStock = true;
+                    items.erase(items.begin() + i);
+                    return;
                 }
             }
+        }
     }
 
     vector<Item*> items;
@@ -297,22 +297,7 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         if (IsKeyPressed(KEY_ESCAPE)) {
             return false;
         }
-        // Check if Enter key has been pressed
-        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
-            auto it = users.find(usernameInput);
-            if (it == users.end()) {
-                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
-                usernameInput = "";
-                passwordInput = "";
-                continue;
-            }
-            if (it->second != passwordInput) {
-                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
-                passwordInput = "";
-                continue;
-            }
-            return true;
-        }
+
 
         // Draw
         BeginDrawing();
@@ -329,6 +314,23 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         DrawTextEx(OpenSans, "Enter your username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter your username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
         DrawTextEx(OpenSans, "Enter your password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter your password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
 
+        // Check if Enter key has been pressed
+        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
+            auto it = users.find(usernameInput);
+            if (it == users.end()) {
+                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
+                usernameInput = "";
+                passwordInput = "";
+                continue;
+            }
+            if (it->second != passwordInput) {
+                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
+                passwordInput = "";
+                continue;
+            }
+            EndDrawing();
+            return true;
+        }
 
 //        if (IsKeyPressed(KEY_ENTER)) {
 //            auto it = users.find(usernameInput);
@@ -346,6 +348,18 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
 //            return true;
 //        }
         EndDrawing();
+        if(IsKeyPressed(KEY_BACKSPACE)){
+            if(CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+                if (usernameInput.length() > 0) {
+                    usernameInput.pop_back();
+                }
+            }
+            if(CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+                if (passwordInput.length() > 0) {
+                    passwordInput.pop_back();
+                }
+            }
+        }
     }
     return false;
 }
@@ -374,14 +388,14 @@ void OrderConfirmationPage(Cart& cart, Font& OpenSans) {
 }
 
 bool isValidPassword(const string & password){
-    return password.length() < 5;
+    return password.length() > 5;
 }
 
 bool isValidUsername(const string& username) {
     return username.length() >= 5;
 }
 
-void createSignUpPage(map<string, string>& users, Font& OpenSans) {
+bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
     string usernameInput = "";
     string passwordInput = "";
     Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
@@ -399,7 +413,9 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
                 passwordInput += (char) key;
             }
         }
-
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            return false;
+        }
         // Draw
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -417,9 +433,6 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
                    2.0f, BLACK);
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
-
-        EndDrawing();
-
 
         if (IsKeyPressed(KEY_ENTER)) {
             if (users.find(usernameInput) != users.end()) {
@@ -442,11 +455,32 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
                 passwordInput = "";
                 continue;
             }
+            ofstream file2("usersdb.csv", ios_base::app);
+            file2 << "\n" << usernameInput << "," << passwordInput;
             users.insert({usernameInput, passwordInput});
             DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
-            break; // Exit the loop
+            EndDrawing();
+            return true; // Exit the loop
         }
+
+
+        EndDrawing();
+
+        if(IsKeyPressed(KEY_BACKSPACE)){
+            if(CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
+                if (usernameInput.length() > 0) {
+                    usernameInput.pop_back();
+                }
+            }
+            if(CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
+                if (passwordInput.length() > 0) {
+                    passwordInput.pop_back();
+                }
+            }
+        }
+
     }
+    return false;
 }
 
 enum AppState {
@@ -482,16 +516,24 @@ int main() {
         InitWindow(W, H, "GME: Grocery Made Easy");
         // This manual entry of items will be replaced by using fstream library and a .txt file.
 
-        Category Electronics("Electronics");
-        Category Dairy("Dairy");
-        Category Healthcare("Healthcare");
-        Category PetNeeds("Pet Needs");
-        Category Pharmacy("Pharmacy");
-        Category Skincare("Skincare");
-        Category Household("Household and Cleaning Supplies");
-        Category EverydayEssentials("Everyday Essentials");
-        Category Beverages("Beverages");
-        Category FrozenItems("Frozen Items");
+//        Category Electronics("Electronics");
+//        Category Dairy("Dairy");
+//        Category Healthcare("Healthcare");
+//        Category PetNeeds("Pet Needs");
+//        Category Pharmacy("Pharmacy");
+//        Category Skincare("Skincare");
+//        Category Household("Household and Cleaning Supplies");
+//        Category EverydayEssentials("Everyday Essentials");
+//        Category Beverages("Beverages");
+//        Category FrozenItems("Frozen Items");
+
+        vector<Category> categories;
+        ifstream cat("categories.txt");
+        string line1;
+        while (getline(cat, line1)) {
+            Category c(line1);
+            categories.push_back(c);
+        }
 
         vector<Item> items;
         ifstream file("items.txt");
@@ -510,7 +552,7 @@ int main() {
         }
 
         map<string,string> users;   //TODO: Update this
-        ifstream file2("users.csv");
+        ifstream file2("usersdb.csv");
         string line2;
         while (getline(file2, line2)) {
             vector<string> parts = split(line2, ',');
@@ -548,61 +590,61 @@ int main() {
 //                state = RIDER_HOME_PAGE;
 //                // TODO: Change state to rider homepage
 //            }
-                if (GetMouseWheelMove() > 0) {
-                    if (scrollOffset > 0) scrollOffset -= 20;
-                }
-                if (GetMouseWheelMove() < 0) {
-                    if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 20;
-                }
-                if (IsKeyDown(KEY_DOWN)) {
-                    if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
-                }
-                if (IsKeyDown(KEY_UP)) {
-                    if (scrollOffset > 0) scrollOffset -= 10;
-                }
-
-                // Draw
-                BeginDrawing();
-
-                ClearBackground(LIGHTGRAY);
-
-                // Draw the appropriate screen based on the current state
-                switch (state) {
-                    case MAIN_MENU:
-                        MainMenu(OpenSans);
-                        break;
-                    case USER_HOME_PAGE:
-                        UserHomePage(items, OpenSans);
-                        break;
-                    case ORDER_CONFIRMATION_PAGE:
-                        OrderConfirmationPage(cart, OpenSans);
-                        break;
-                    case LOGIN_PAGE:
-                        if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
-                        else state = MAIN_MENU;
-                        // Handle other states as needed
-                        break;
-                    case SIGNUP_PAGE:
-                        createSignUpPage(users, OpenSans);
-                }
-
-                EndDrawing();
+            if (GetMouseWheelMove() > 0) {
+                if (scrollOffset > 0) scrollOffset -= 20;
             }
-            UnloadFont(OpenSans);
-            CloseWindow();
-        }
-        catch (const CustomException &e) {
-            cout << e.what() << endl;
-        }
-        catch(const InvalidNumberException &e) {
-            cout << e.what() << endl;
-        }
-        catch (const std::exception &e) {
-            cout << "Caught an exception: " << e.what() << endl;
-        }
-        catch (...) {
-            cout << "Caught an unknown exception." << endl;
-        }
+            if (GetMouseWheelMove() < 0) {
+                if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 20;
+            }
+            if (IsKeyDown(KEY_DOWN)) {
+                if (scrollOffset < (items.size() * 60 - H)) scrollOffset += 10;
+            }
+            if (IsKeyDown(KEY_UP)) {
+                if (scrollOffset > 0) scrollOffset -= 10;
+            }
 
-        return 0;
+            // Draw
+            BeginDrawing();
+
+            ClearBackground(LIGHTGRAY);
+
+            // Draw the appropriate screen based on the current state
+            switch (state) {
+                case MAIN_MENU:
+                    MainMenu(OpenSans);
+                    break;
+                case USER_HOME_PAGE:
+                    UserHomePage(items, OpenSans);
+                    break;
+                case ORDER_CONFIRMATION_PAGE:
+                    OrderConfirmationPage(cart, OpenSans);
+                    break;
+                case LOGIN_PAGE:
+                    if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
+                    else state = MAIN_MENU;
+                    break;
+                case SIGNUP_PAGE:
+                    createSignUpPage(users, OpenSans);
+                    break;
+            }
+
+            EndDrawing();
+        }
+        UnloadFont(OpenSans);
+        CloseWindow();
     }
+    catch (const CustomException &e) {
+        cout << e.what() << endl;
+    }
+    catch(const InvalidNumberException &e) {
+        cout << e.what() << endl;
+    }
+    catch (const std::exception &e) {
+        cout << "Caught an exception: " << e.what() << endl;
+    }
+    catch (...) {
+        cout << "Caught an unknown exception." << endl;
+    }
+
+    return 0;
+}
