@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 project(GroceryMadeEasy)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 26)
 
 set(GROCERYMADEEASY_SOURCES main.cpp)
 add_executable(GroceryMadeEasy ${GROCERYMADEEASY_SOURCES})

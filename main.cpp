@@ -286,7 +286,7 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         int key = GetCharPressed();
 
         // Check if a key has been pressed
-        if (key >= 32 && key <= 125) {
+        if ((key >= 48 && key <= 57) || (key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
             if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
                 usernameInput += (char)key;
             } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
@@ -374,15 +374,7 @@ void OrderConfirmationPage(Cart& cart, Font& OpenSans) {
 }
 
 bool isValidPassword(const string & password){
-    if (password.length() <= 6){
-        return false;
-    }
-    for (auto const &c: password){
-        if (!isdigit(c) && !isalpha(c) && !ispunct(c)){
-            return false;
-        }
-    }
-    return true;
+    return password.length() < 5;
 }
 
 bool isValidUsername(const string& username) {
@@ -400,7 +392,7 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
         int key = GetCharPressed();
 
         // Check if a key has been pressed
-        if (key >= 32 && key <= 125) {
+        if ((key >= 48 && key <= 57) || (key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
             if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
                 usernameInput += (char) key;
             } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
@@ -445,18 +437,18 @@ void createSignUpPage(map<string, string>& users, Font& OpenSans) {
             }
             if (!isValidPassword(passwordInput)) {
                 DrawTextEx(OpenSans,
-                           "Password must be at least 6 characters long and contain at least one digit, one letter, and one special character.",
+                           "Password must be at least 5 characters long and contain digits and letters only.",
                            {200, 500}, 30, 2.0f, RED);
                 passwordInput = "";
                 continue;
             }
-
             users.insert({usernameInput, passwordInput});
             DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
             break; // Exit the loop
         }
     }
 }
+
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE,
@@ -589,6 +581,7 @@ int main() {
                         if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
                         else state = MAIN_MENU;
                         // Handle other states as needed
+                        break;
                     case SIGNUP_PAGE:
                         createSignUpPage(users, OpenSans);
                 }
