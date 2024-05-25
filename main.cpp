@@ -178,7 +178,6 @@ void validateName(string& name, bool isCategoryName, bool isBrandName) {
 
 
 class Cart {
-    vector<Item*> items;
 public:
     float calculateTotal() {
         float total = 0;
@@ -254,6 +253,8 @@ public:
                 }
             }
     }
+
+    vector<Item*> items;
 };
 
 int W = 1500, H = 900;
@@ -294,17 +295,24 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         }
         // Check if ESC key has been pressed
         if (IsKeyPressed(KEY_ESCAPE)) {
-            if (usernameInput.empty() && passwordInput.empty()) {
-                CloseWindow();
-                break;
-            }
-            else {
-                usernameInput = "";
-                passwordInput = "";
-            }
+            return false;
         }
         // Check if Enter key has been pressed
-
+        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
+            auto it = users.find(usernameInput);
+            if (it == users.end()) {
+                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
+                usernameInput = "";
+                passwordInput = "";
+                continue;
+            }
+            if (it->second != passwordInput) {
+                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
+                passwordInput = "";
+                continue;
+            }
+            return true;
+        }
 
         // Draw
         BeginDrawing();
@@ -318,23 +326,51 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
         DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
 
-        if (IsKeyPressed(KEY_ENTER)) {
-            // Check if the input username and password match a pair in the map
-            auto it = users.find(usernameInput);
-            if (it != users.end() && it->second == passwordInput) {
-                return true;
-            } else {
-                // Display error message
-                DrawText("Invalid username or password. Please try again.", 200, 400, 40, RED);
-                // Clear input boxes
-                usernameInput = "";
-                passwordInput = "";
-            }
-        }
+        DrawTextEx(OpenSans, "Enter your username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter your username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "Enter your password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter your password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
 
+
+//        if (IsKeyPressed(KEY_ENTER)) {
+//            auto it = users.find(usernameInput);
+//            if (it == users.end()) {
+//                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
+//                usernameInput = "";
+//                passwordInput = "";
+//                return false;
+//            }
+//            if (it->second != passwordInput) {
+//                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
+//                passwordInput = "";
+//                return false;
+//            }
+//            return true;
+//        }
         EndDrawing();
     }
     return false;
+}
+
+void OrderConfirmationPage(Cart& cart, Font& OpenSans) {
+    // Generate a random 5-digit order number
+    int orderNumber = rand() % 90000 + 10000;
+
+    // Draw a rectangle in the middle of the screen
+    Rectangle rec = { static_cast<float>(W/2 - 300), static_cast<float>(H/2 - 200), 600, 400 };
+    DrawRectangleRec(rec, LIGHTGRAY);
+
+    // Draw the text inside the rectangle
+    int y = rec.y + 20;
+    DrawTextEx(OpenSans, ("Order Confirmation - Order Number: " + std::to_string(orderNumber)).c_str(), {rec.x + rec.width/2 - MeasureTextEx(OpenSans, ("Order Confirmation - Order Number: " + std::to_string(orderNumber)).c_str(), 30, 0).x/2, static_cast<float>(y)}, 30, 2.0f, BLACK);
+    y += 40;
+    for (const auto& item : cart.items) {
+        DrawTextEx(OpenSans, (item->name + ": " + std::to_string(item->price)).c_str(), {rec.x + rec.width/2 - MeasureTextEx(OpenSans, (item->name + ": " + std::to_string(item->price)).c_str(), 30, 0).x/2, static_cast<float>(y)}, 30, 2.0f, BLACK);
+        y += 40;
+    }
+    DrawTextEx(OpenSans, ("Total: " + std::to_string(cart.calculateTotal())).c_str(), {rec.x + rec.width/2 - MeasureTextEx(OpenSans, ("Total: " + std::to_string(cart.calculateTotal())).c_str(), 30, 0).x/2, static_cast<float>(y)}, 30, 2.0f, BLACK);
+    y += 40;
+    DrawTextEx(OpenSans, "✔", {rec.x + rec.width/2 - MeasureTextEx(OpenSans, "✔", 30, 0).x/2, static_cast<float>(y)}, 30, 2.0f, BLACK);
+    y += 40;
+    DrawTextEx(OpenSans, "Thank you for your order!", {rec.x + rec.width/2 - MeasureTextEx(OpenSans, "Thank you for your order!", 30, 0).x/2, static_cast<float>(y)}, 30, 2.0f, BLACK);
 }
 
 bool isValidPassword(const string & password){
@@ -480,8 +516,14 @@ int main() {
             Item item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(item);
         }
-        map<string,string> users;   //TODO: Update this
 
+        map<string,string> users;   //TODO: Update this
+        ifstream file2("users.csv");
+        string line2;
+        while (getline(file2, line2)) {
+            vector<string> parts = split(line2, ',');
+            users.insert({parts[0], parts[1]});
+        }
         Cart cart;
 
         AppState state = MAIN_MENU;
@@ -490,10 +532,14 @@ int main() {
         {
             // Update
             if (IsKeyPressed(KEY_U)) {
-                state = LOGIN_PAGE;
+                if(LoginPage(users, OpenSans)) {
+                    state = USER_HOME_PAGE;
+                }
             }
             else if (IsKeyPressed(KEY_S)) {
-                state = SIGNUP_PAGE;
+                if(createSignUpPage(users, OpenSans)) {
+                    state = USER_HOME_PAGE;
+                }
             }
             if(state == LOGIN_PAGE && IsKeyPressed(KEY_S)) {
                 state = SIGNUP_PAGE;
