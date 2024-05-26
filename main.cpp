@@ -241,7 +241,7 @@ public:
 //    DrawTextEx(OpenSans, "Press 'S' to sign up", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
 //}
 
-void UserHomePage(const std::vector<Item>& items) {
+void UserHomePage(const std::vector<Item*>& items) {
 //    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
 
     int width = 250;
@@ -471,14 +471,16 @@ bool isValidUsername(const string& username) {
 //    return false;
 //}
 
-bool ItemPage(int productID, const vector<Item>& items, Cart c) {
+bool ItemPage(int productID, const vector<Item*>& items, Cart c) {
     bool x = false;
     unique_ptr<Item*> item;
-    for(auto s: items) {
-        if(s.productID == productID) {
-            s.display();
+    for(size_t i = 0; i < items.size(); i++) {
+        auto s = items[i];
+        if(s->productID == productID) {
+            s->display();
             x = true;
-            unique_ptr<Item*> item = make_unique<Item*>(new Item(s));
+            unique_ptr<Item*> item = make_unique<Item*>(s);
+            break;
         }
     }
     if(item != nullptr) {
@@ -497,7 +499,7 @@ bool ItemPage(int productID, const vector<Item>& items, Cart c) {
                 cout << "Product not added to cart." << endl;
                 return false;
             }
-            if (quantity > 0 && quantity < items[productID].quantity) {
+            if (quantity > 0 && quantity < items[productID]->quantity) {
                 cout << "Product added to cart." << endl;
                 for(size_t i = 0; i < quantity; i++) {
                     c.addItem(*item);
@@ -686,6 +688,13 @@ vector<string> split(const string &s, char delimiter) {
 
 int main() {
     map<string, string> users;
+    ifstream file2("usersdb.csv");
+    string line2;
+    while (getline(file2, line2)) {
+        vector<string> parts = split(line2, ',');
+        users.insert({parts[0], parts[1]});
+    }
+    file2.close();
     char choice;
    string username, password;
 
@@ -735,59 +744,69 @@ int main() {
         }
     }
 
-//
-//        vector<Category> categories;
-//        ifstream cat("categories.txt");
-//        string line1;
-//        while (getline(cat, line1)) {
-//            Category c(line1);
-//            categories.push_back(c);
-//        }
-//
-//        vector<Item> items;
-//        ifstream file("items.txt");
-//        string line;
-//        while (getline(file, line)) {
-//            vector<string> parts = split(line, ',');
-//            string name = parts[0];
-//            string brandName = parts[1];
-//            int quantity = stoi(parts[2]);
-//            int price = stoi(parts[3]);
-//            bool inStock = parts[4] == "true" ? true : false;
-//            Category category(parts[5]);
-//            int productID = stoi(parts[6]);
-//            Item item(name, brandName, quantity, price, inStock, category, productID);
-//            items.push_back(item);
-//        }
+
+        vector<Category> categories;
+        ifstream cat("categories.txt");
+        string line1;
+        while (getline(cat, line1)) {
+            Category c(line1);
+            categories.push_back(c);
+        }
+
+        vector<Item*> items;
+        ifstream file("items.txt");
+        string line;
+        while (getline(file, line)) {
+            vector<string> parts = split(line, ',');
+            string name = parts[0];
+            string brandName = parts[1];
+            int quantity = stoi(parts[2]);
+            int price = stoi(parts[3]);
+            bool inStock = parts[4] == "true" ? true : false;
+            Category category(parts[5]);
+            int productID = stoi(parts[6]);
+            unique_ptr<Item> item = make_unique<Item>(name, brandName, quantity, price, inStock, category, productID);
+            items.push_back(item.get());
+        }
 //        map<int, Texture2D> textures;
 //        for (const auto& item : items) {
 //            Texture2D texture = LoadTexture(("resources/images/" + std::to_string(item.productID) + ".png").c_str());
 //            textures[item.productID] = texture;
 //        }
 //        map<string,string> users;
-//        ifstream file2("usersdb.csv");
-//        string line2;
-//        while (getline(file2, line2)) {
-//            vector<string> parts = split(line2, ',');
-//            users.insert({parts[0], parts[1]});
-//        }
-//        Cart cart;
+
+        Cart cart;
+
+    UserHomePage(items);
+    int productID = 3;
+    ItemPage(productID, items, cart);
+    if(cart_display(cart)) {
+        if(CheckoutPage(cart)) {
+            OrderConfirmationPage(cart);
+        }
+        else {
+            cout << "Order cancelled." << endl;
+        }
+    }
+    else {
+        cout << "Order cancelled." << endl;
+    }
 
 //        AppState state = MAIN_MENU;
 
-    }
-    catch (const CustomException &e) {
-        cout << e.what() << endl;
-    }
-    catch(const InvalidNumberException &e) {
-        cout << e.what() << endl;
-    }
-    catch (const std::exception &e) {
-        cout << "Caught an exception: " << e.what() << endl;
-    }
-    catch (...) {
-        cout << "Caught an unknown exception." << endl;
-    }
+//    }
+//    catch (const CustomException &e) {
+//        cout << e.what() << endl;
+//    }
+//    catch(const InvalidNumberException &e) {
+//        cout << e.what() << endl;
+//    }
+//    catch (const std::exception &e) {
+//        cout << "Caught an exception: " << e.what() << endl;
+//    }
+//    catch (...) {
+//        cout << "Caught an unknown exception." << endl;
+//    }
 
     return 0;
 }
