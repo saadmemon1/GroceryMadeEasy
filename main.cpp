@@ -691,7 +691,7 @@ vector<string> split(const string &s, char delimiter) {
     return tokens;
 }
 
-void loadCartFromFile(const string& username, const vector<Item*>& items, Cart& cart) {
+void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
     ifstream cartdb("cartdb.csv");
     if (!cartdb) {
         // No cart file for this user, so just return
@@ -720,12 +720,28 @@ void loadCartFromFile(const string& username, const vector<Item*>& items, Cart& 
 }
 
 void saveCart(const Cart& cart, const string& username) {
-    ofstream file("cartdb.csv", ios_base::app);
-    file << username << ",";
-    for (const auto& item : cart.items) {
-        file << item->productID << "," << item->quantityCart;
+    ifstream file("cartdb.csv", ios_base::app);
+    string line;
+    while(getline(file, line)) {
+        vector<string> parts = split(line, ',');
+        if(parts[0] == username) {
+            file.close();
+            ofstream file2("cartdb.csv",ios_base::app);
+            for(const auto& item: cart.items) {
+                file2 << item->productID << "," << item->quantityCart;
+            }
+            file2 << "\n";
+            file.close();
+            return;
+        }
     }
-    file << "\n";
+    file.close();
+    ofstream file1("cartdb.csv", ios_base::app);
+    file1 << username << ",";
+    for (const auto& item : cart.items) {
+        file1 << item->productID << "," << item->quantityCart;
+    }
+    file1 << "\n";
     file.close();
 }
 
@@ -848,7 +864,8 @@ int main() {
 //        map<string,string> users;
 
         Cart cart;
-    loadCartFromFile(username, items, userCarts[username]);
+    loadCart(username, items, userCarts[username]);
+
 
     UserHomePage(items);
     int productID = 3;
