@@ -587,7 +587,7 @@ bool CheckoutPage(Font& OpenSans) {
     return false;
 }
 enum AppState {
-    MAIN_MENU,
+    MAIN_MENU, // Enter L to login as an existing member etc, S to sign up,
     USER_HOME_PAGE, // TODO: Buttons for each item to view its details
     SIGNUP_PAGE,
     LOGIN_PAGE,
