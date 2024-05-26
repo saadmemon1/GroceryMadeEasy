@@ -471,15 +471,15 @@ bool isValidUsername(const string& username) {
 //    return false;
 //}
 
-bool ItemPage(int productID, const vector<Item*>& items, Cart c) {
+bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     bool x = false;
-    unique_ptr<Item*> item;
+    Item* item = nullptr;
     for(size_t i = 0; i < items.size(); i++) {
         auto s = items[i];
         if(s->productID == productID) {
             s->display();
             x = true;
-            unique_ptr<Item*> item = make_unique<Item*>(s);
+            item = new Item(*s);
             break;
         }
     }
@@ -491,21 +491,24 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart c) {
             cout << "Please enter the quantity you want to purchase: (Enter 0 to cancel)" << endl;
             int quantity;
             cin >> quantity;
-            while(quantity < 0) {
-                cout << "Invalid quantity. Please enter a positive value: ";
+            while(quantity < 0 || quantity > item->quantity) {
+                cout << "Invalid quantity. Please enter a positive value and lower than quantity that we have in stock: ";
                 cin >> quantity;
             }
-            if(quantity == 0) {
-                cout << "Product not added to cart." << endl;
-                return false;
-            }
-            if (quantity > 0 && quantity < items[productID]->quantity) {
-                cout << "Product added to cart." << endl;
-                for(size_t i = 0; i < quantity; i++) {
-                    c.addItem(*item);
+                if (quantity == 0) {
+                    cout << "Product not added to cart." << endl;
+                    return false;
+                } else if (quantity > 0 && quantity <= item->quantity) {
+                    cout << "Product added to cart." << endl;
+                    for (size_t i = 0; i < quantity; i++) {
+                        c.addItem(item);
+                    }
+                    return true;
+                } else {
+                    cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
+                         << item->quantity << endl;
+                    return false;
                 }
-                return true;
-            }
         } else {
             cout << "Product not added to cart." << endl;
             return false;
@@ -558,7 +561,7 @@ bool cart_display(Cart c) {
                     cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of " << maximum << endl;
                 }
             }
-            cout << "Product not found." << endl;
+//            cout << "Product not found." << endl;
         }
         cout << "Would you like to modify any other product's quantity? (Y/N)" << endl;
         cin >> choice;
@@ -598,7 +601,9 @@ bool CheckoutPage(Cart& c) {
 
     while (true) {
         cout << "Enter your address (or type 'X' to cancel): ";
+        cin.ignore();
         getline(cin, addressInput);
+
 
         if (addressInput == "x" || addressInput == "X") {
             return false;
@@ -686,8 +691,66 @@ vector<string> split(const string &s, char delimiter) {
     return tokens;
 }
 
+void loadCartFromFile(const string& username, const vector<Item*>& items, Cart& cart) {
+    ifstream cartdb("cartdb.csv");
+    if (!cartdb) {
+        // No cart file for this user, so just return
+        return;
+    }
+    string line;
+    while (getline(cartdb, line)) {
+        vector<string> parts = split(line, ',');
+        if (parts[0] == username) {
+            for (size_t i = 1; i < parts.size(); i += 2) {
+                int productID = stoi(parts[i]);
+                int quantity = stoi(parts[i + 1]);
+                for (const auto& item : items) {
+                    if (item->productID == productID) {
+                        for (size_t j = 0; j < quantity; j++) {
+                            cart.addItem(new Item(*item));
+                        }
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+    cartdb.close();
+}
+
+void saveCart(const Cart& cart, const string& username) {
+    ofstream file("cartdb.csv", ios_base::app);
+    file << username << ",";
+    for (const auto& item : cart.items) {
+        file << item->productID << "," << item->quantityCart;
+    }
+    file << "\n";
+    file.close();
+}
+
+void DeleteCart(const string& username) {
+    ifstream file("cartdb.csv");
+    ofstream temp("temp.csv");
+    string line;
+    while (getline(file, line)) {
+        vector<string> parts = split(line, ',');
+        if (parts[0] != username) {
+            temp << line << "\n";
+        }
+    }
+    file.close();
+    temp.close();
+    remove("cartdb.csv");
+    rename("temp.csv", "cartdb.csv");
+}
+
+
+
 int main() {
     map<string, string> users;
+    map<string, Cart> userCarts;
+
     ifstream file2("usersdb.csv");
     string line2;
     while (getline(file2, line2)) {
@@ -695,14 +758,22 @@ int main() {
         users.insert({parts[0], parts[1]});
     }
     file2.close();
+
+
     char choice;
    string username, password;
+    cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
+    cout << "Please login or sign up to continue." << endl;
 
-    while (true) {
+    while(true) {
         cout << "Enter L to login or S to sign up: ";
         cin >> choice;
         choice = tolower(choice);
-
+        if (choice == 'l' || choice == 'L' || choice == 's' || choice == 'S') {
+            break;
+        }
+    }
+    while (true) {
         if (choice == 'l') {
             cout << "Enter your username: ";
             cin >> username;
@@ -737,12 +808,13 @@ int main() {
             }
 
             users.insert({username,password});
-            cout << "Account created successfully!\n";
+            cout << "\n\033[1mAccount created successfully!\033[0m\n";
             break;
         } else {
             cout << "Invalid choice. Please enter L or S.\n";
         }
     }
+
 
 
         vector<Category> categories;
@@ -765,8 +837,8 @@ int main() {
             bool inStock = parts[4] == "true" ? true : false;
             Category category(parts[5]);
             int productID = stoi(parts[6]);
-            unique_ptr<Item> item = make_unique<Item>(name, brandName, quantity, price, inStock, category, productID);
-            items.push_back(item.get());
+            Item* i = new Item(name, brandName, quantity, price, inStock, category, productID);
+            items.push_back(i);
         }
 //        map<int, Texture2D> textures;
 //        for (const auto& item : items) {
@@ -776,6 +848,7 @@ int main() {
 //        map<string,string> users;
 
         Cart cart;
+    loadCartFromFile(username, items, userCarts[username]);
 
     UserHomePage(items);
     int productID = 3;
