@@ -1,3 +1,0 @@
-C:/Users/PCCC/CLionProjects/Grocery/cmake-build-debug/CMakeFiles/GroceryMadeEasy.dir
-C:/Users/PCCC/CLionProjects/Grocery/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/PCCC/CLionProjects/Grocery/cmake-build-debug/CMakeFiles/rebuild_cache.dir

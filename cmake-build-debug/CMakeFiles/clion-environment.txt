@@ -1,5 +1,0 @@
-ToolSet: 11.0 w64 (local)@C:\Users\PCCC\Desktop\CLion 2023.3\bin\mingw
-Ninja: 1.11.1@C:\Users\PCCC\Desktop\CLion 2023.3\bin\ninja\win\x64\ninja.exe
-Options: 
-
-Options:
