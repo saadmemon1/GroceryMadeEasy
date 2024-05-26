@@ -4,10 +4,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <cctype>
 #include <map>
 #include <algorithm>
 #include <memory>
+#include <iomanip>
 using namespace std;
 
 class InvalidNumberException : public exception {
@@ -31,6 +31,8 @@ public:
 };
 class OutOfStockException : public std::exception {
 public:
+    string message;
+    OutOfStockException(const string& m) : message(m) {}
     const char* what() const noexcept override {
         return message.c_str();
     }
@@ -142,7 +144,6 @@ void validateName(string& name, bool isCategoryName, bool isBrandName) {
                     }
                 }
             }
-            break; // If input is valid, break the loop
         } catch (const CustomException& e) {
             cout << e.what() << endl;
             cout << "Please enter the name again: ";
@@ -157,7 +158,7 @@ class Cart {
 public:
     float calculateTotal() {
         float total = 0;
-        for(int i = 0; i< items.size(); i++) {
+        for(size_t i = 0; i< items.size(); i++) {
             if(items[i]->quantityCart > 1) {
                 total += items[i]->price * items[i]->quantityCart;
             }
@@ -179,7 +180,7 @@ public:
                 }
                 return;
             }
-            for (int p = 0; p < items.size(); p++) {
+            for (size_t p = 0; p < items.size(); p++) {
                 if (items[p]->productID == i->productID) {
                     items[p]->quantityCart++;
                     i->quantity--;
@@ -204,7 +205,7 @@ public:
         for(size_t i = 0; i< items.size(); i++) {
             items[i]->cartDisplay();
         }
-        cout << "Total: " << this->calculateTotal() << endl;
+        cout << "Total: PKR " << fixed << setprecision(1) << this->calculateTotal() << endl;
     }
     void removeItem(Item* item) {
         if(items.size() == 0) {
@@ -232,7 +233,7 @@ public:
     vector<Item*> items;
 };
 
-string UserHomePage(const std::vector<Item*>& items) {
+string UserHomePage(const vector<Item*>& items) {
     int titleWidth = 70;
     int priceWidth = 10;
     int idWidth = 10;
@@ -294,13 +295,11 @@ bool isValidUsername(const string& username) {
 }
 
 bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
-    bool x = false;
     Item* item = nullptr;
     for(size_t i = 0; i < items.size(); i++) {
         auto s = items[i];
         if(s->productID == productID) {
             s->display();
-            x = true;
             item = new Item(*s);
             break;
         }
@@ -308,6 +307,7 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     if(item != nullptr ) {
         if(!item->inStock) {
             cout << "Product out of stock." << endl;
+//            delete item;
             return false;
         }
         cout << "\nDo you want to purchase this product? (Y/N)" << endl;
@@ -323,20 +323,24 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
             }
                 if (quantity == 0) {
                     cout << "Product not added to cart." << endl;
+//                    delete item;
                     return false;
                 } else if (quantity > 0 && quantity <= item->quantity) {
                     cout << "Product added to cart." << endl;
                     for (size_t i = 0; i < quantity; i++) {
                         c.addItem(item);
                     }
+//                    delete item;
                     return true;
                 } else {
                     cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
                          << item->quantity << endl;
+//                    delete item;
                     return false;
                 }
         } else {
             cout << "Product not added to cart." << endl;
+//            delete item;
             return false;
         }
     }
@@ -344,7 +348,6 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
         cout << "Product not found." << endl;
         return false;
     }
-
 }
 
 bool cart_display(Cart& c) {
@@ -486,20 +489,6 @@ bool CheckoutPage(Cart& c) {
     return true;
 }
 
-enum AppState {
-    MAIN_MENU,
-    USER_HOME_PAGE, // TODO: Buttons for each item to view its details
-    SIGNUP_PAGE,
-    LOGIN_PAGE,
-    ITEM_PAGE,
-    CART_PAGE,  // TODO: Buttons for inc/dec quantity, image etc, total price
-    // TODO: Save cart for each user (IMPORTANT!)
-    CHECKOUT_PAGE,
-    ORDER_CONFIRMATION_PAGE,
-
-    // Add other states as needed
-};
-
 vector<string> split(const string &s, char delimiter) {
     vector<string> tokens;
     string token;
@@ -513,7 +502,6 @@ vector<string> split(const string &s, char delimiter) {
 void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
     ifstream cartdb("cartdb.csv");
     if (!cartdb) {
-        // No cart file for this user, so just return
         return;
     }
     string line;
@@ -557,12 +545,10 @@ void saveCart(const Cart& cart, const string& username) {
                     break;
                 }
             }
-            // If the cart details are the same, return without writing anything to the file
             if (isSame) {
                 file.close();
                 return;
             }
-                // If the cart details are not the same, write the new cart details to the file
             else {
                 file.close();
                 ofstream file2("cartdb.csv",ios_base::app);
@@ -677,6 +663,9 @@ int main() {
 
         vector<Category> categories;
         ifstream cat("categories.txt");
+        if(!cat) {
+            throw CustomException("Categories file not found.");
+        }
         string line1;
         while (getline(cat, line1)) {
             Category c(line1);
@@ -686,6 +675,9 @@ int main() {
 
         vector<Item*> items;
         ifstream file("items.txt");
+        if (!file) {
+            throw CustomException("Items file not found.");
+        }
         string line;
         while (getline(file, line)) {
             vector<string> parts = split(line, ',');
@@ -696,7 +688,7 @@ int main() {
             bool inStock = parts[4] == "true" ? true : false;
             Category category(parts[5]);
             int productID = stoi(parts[6]);
-            Item *i = new Item(name, brandName, quantity, price, inStock, category, productID);
+            Item* i = new Item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(i);
         }
         file.close();
@@ -709,7 +701,6 @@ int main() {
             if (pID == "x" || pID == "X") {
                 saveCart(cart, username);
                 return 0;
-                // sign out and save cart
             }
             if (pID == "c" || pID == "C") {
                 if (cart_display(cart)) {
@@ -732,6 +723,9 @@ int main() {
         cout << e.what() << endl;
     }
     catch(const InvalidNumberException &e) {
+        cout << e.what() << endl;
+    }
+    catch (const OutOfStockException &e) {
         cout << e.what() << endl;
     }
     catch (const std::exception &e) {
