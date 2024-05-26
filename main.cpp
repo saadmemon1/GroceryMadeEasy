@@ -276,6 +276,8 @@ void UserHomePage(const std::vector<Item>& items, Font& OpenSans, map<int,Textur
     int itemsperRow = 3;
     int rows = (items.size() + itemsperRow - 1) / itemsperRow;
 
+    ClearBackground(WHITE);
+
     // Update the scroll offset based on mouse wheel movement
     if (GetMouseWheelMove() > 0) {
         if (scrollOffset > 0) scrollOffset -= 20;
@@ -306,6 +308,8 @@ void UserHomePage(const std::vector<Item>& items, Font& OpenSans, map<int,Textur
 bool LoginPage(const map<string,string>& users, Font &OpenSans) {
     string usernameInput = "";
     string passwordInput = "";
+    bool error = false;
+    string errorMessage = "";
     Rectangle usernameRec = { 200, 200, 300, 50 };
     Rectangle passwordRec = { 200, 300, 300, 50 };
 
@@ -336,26 +340,38 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
 
         // Draw the input text
-        DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
-        DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
+        DrawTextEx(OpenSans, usernameInput.c_str(), {usernameRec.x + 5, usernameRec.y + 5}, 35, 2.0f, BLACK);
+        string passwordHidden = "";
+        for (size_t i = 0; i < passwordInput.length(); i++) {
+            passwordHidden += "*";
+        }
+        DrawTextEx(OpenSans, passwordHidden.c_str(), {passwordRec.x + 5, passwordRec.y + 5}, 35, 2.0f, BLACK);
 
         DrawTextEx(OpenSans, "Enter your username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter your username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
         DrawTextEx(OpenSans, "Enter your password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter your password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
 
+        if(error) {
+            DrawTextEx(OpenSans, errorMessage.c_str(), {200, 500}, 30, 2.0f, RED);
+        }
         // Check if Enter key has been pressed
         if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
             auto it = users.find(usernameInput);
             if (it == users.end()) {
-                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
+//                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
                 usernameInput = "";
                 passwordInput = "";
+                error = true;
+                errorMessage = "Username does not exist. Please try again.";
                 continue;
             }
             if (it->second != passwordInput) {
-                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
+//                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
                 passwordInput = "";
+                error = true;
+                errorMessage = "Incorrect password. Please try again.";
                 continue;
             }
+            error = false;
             EndDrawing();
             return true;
         }
@@ -411,6 +427,9 @@ bool isValidUsername(const string& username) {
 bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
     string usernameInput = "";
     string passwordInput = "";
+    bool error = false;
+    string message = "";    // For errors
+    int framesDelay = 0;
     Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
     Rectangle passwordRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2), 300, 50 };
 
@@ -444,36 +463,56 @@ bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
         DrawTextEx(OpenSans, "Enter a password:",
                    {passwordRec.x - MeasureTextEx(OpenSans, "Enter a password:", 30, 0).x, passwordRec.y - 40}, 30,
                    2.0f, BLACK);
-        DrawText(usernameInput.c_str(), usernameRec.x + 5, usernameRec.y + 5, 40, BLACK);
-        DrawText(passwordInput.c_str(), passwordRec.x + 5, passwordRec.y + 5, 40, BLACK);
+        DrawTextEx(OpenSans, usernameInput.c_str(), {usernameRec.x + 5, usernameRec.y + 5}, 35, 2.0f, BLACK);
+        DrawTextEx(OpenSans, passwordInput.c_str(), {passwordRec.x + 5, passwordRec.y + 5}, 35, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "Press Enter to create an account.", {W/2 - MeasureTextEx(OpenSans, "Press Enter to create an account.", 30, 0).x/2, 700}, 30, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "Sign Up", {W/2 - MeasureTextEx(OpenSans, "Sign Up", 50, 0).x/2, 100}, 50, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
+        if(error) {
+            DrawTextEx(OpenSans, message.c_str(), {200, 500}, 30, 2.0f, RED);
+        }
+        DrawFPS(10,10);
+        if(framesDelay > 0) {
+            DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
+            framesDelay++;
+            if(framesDelay > 90) {
+                framesDelay = 0;
+//                    EndDrawing();
+                return true; // Exit the loop
+            }
+        }
 
-        if (IsKeyPressed(KEY_ENTER)) {
-            if (users.find(usernameInput) != users.end()) {
-                DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
+        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
+            auto it = users.find(usernameInput);
+            if (it != users.end()) {
+//                DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
                 usernameInput = "";
                 passwordInput = "";
+                message = "Username already exists. Please try again.";
+                error = true;
                 continue;
             }
 
             if (!isValidUsername(usernameInput)) {
-                DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
+//                DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
                 usernameInput = "";
                 passwordInput = "";
+                error = true;
+                message = "Username must be at least 5 characters long.";
                 continue;
             }
             if (!isValidPassword(passwordInput)) {
-                DrawTextEx(OpenSans,
-                           "Password must be at least 5 characters long and contain digits and letters only.",
-                           {200, 500}, 30, 2.0f, RED);
+//                DrawTextEx(OpenSans,"Password must be at least 5 characters long and contain digits and letters only.",{200, 500}, 30, 2.0f, RED);
                 passwordInput = "";
+                error = true;
+                message = "Password must be at least 5 characters long and contain digits and letters only.";
                 continue;
             }
+            error = false;
+            framesDelay = 1;
             ofstream file2("usersdb.csv", ios_base::app);
             file2 << "\n" << usernameInput << "," << passwordInput;
             users.insert({usernameInput, passwordInput});
-            DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
-            EndDrawing();
-            return true; // Exit the loop
         }
 
 
@@ -548,8 +587,8 @@ bool CheckoutPage(Font& OpenSans) {
 enum AppState {
     MAIN_MENU,
     USER_HOME_PAGE, // TODO: Buttons for each item to view its details
-    SIGNUP_PAGE,    // TODO: Fix the drawTextEx
-    LOGIN_PAGE, // TODO: Fix the drawTextEx
+    SIGNUP_PAGE,
+    LOGIN_PAGE,
     ITEM_PAGE,
     CART_PAGE,  // TODO: Buttons for inc/dec quantity, image etc, total price
     // TODO: Save cart for each user (IMPORTANT!)
@@ -614,6 +653,7 @@ int main() {
         AppState state = MAIN_MENU;
         Font OpenSans = LoadFont("resources/fonts/OpenSans_Condensed-SemiBold.ttf"); // Replace with your font file
         SetTargetFPS(60);
+
         while (!WindowShouldClose())    // Detect window close button or ESC key
         {
             // Update
@@ -658,6 +698,7 @@ int main() {
             BeginDrawing();
 
             ClearBackground(RAYWHITE);
+            DrawFPS(10, 10);
 
             // Draw the appropriate screen based on the current state
             switch (state) {
@@ -675,10 +716,9 @@ int main() {
                     break;
                 case LOGIN_PAGE:
                     if(LoginPage(users, OpenSans)) state = USER_HOME_PAGE;
-                    else state = MAIN_MENU;
                     break;
                 case SIGNUP_PAGE:
-                    createSignUpPage(users, OpenSans);
+                    if(createSignUpPage(users, OpenSans)) state = USER_HOME_PAGE;
                     break;
             }
 
