@@ -31,10 +31,21 @@ public:
 };
 class OutOfStockException : public std::exception {
 public:
-    string message;
-    OutOfStockException(const string& m) : message(m) {}
     const char* what() const noexcept override {
-        return message.c_str();
+        return "Product out of stock.";
+    }
+};
+
+class InvalidUsernameException : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Invalid username. It must be at least 5 characters long.";
+    }
+};
+class InvalidPasswordException : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Invalid password. It must be at least 5 characters long.";
     }
 };
 
@@ -306,8 +317,7 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     }
     if(item != nullptr ) {
         if(!item->inStock) {
-            cout << "Product out of stock." << endl;
-//            delete item;
+            throw OutOfStockException();
             return false;
         }
         cout << "\nDo you want to purchase this product? (Y/N)" << endl;
@@ -633,7 +643,7 @@ int main() {
                 cout << "Enter a username: ";
                 cin >> username;
                 if (!isValidUsername(username)) {
-                    cout << "Invalid username. It must be at least 5 characters long.\n";
+                    throw InvalidUsernameException();
                     continue;
                 } else if (users.find(username) != users.end()) {
                     cout << "Username already exists. Please enter a unique username.\n";
@@ -646,7 +656,7 @@ int main() {
                 cout << "Enter a password: ";
                 cin >> password;
                 if (!isValidPassword(password)) {
-                    cout << "Invalid password. It must be at least 5 characters long.\n";
+                    throw InvalidPasswordException();
                     continue;
                 }
 
@@ -718,7 +728,15 @@ int main() {
         }
     }
 
-
+    catch(const OutOfStockException& e) {
+        cout << e.what() << std::endl;
+    }
+    catch (const InvalidUsernameException& e) {
+        cout << e.what() << endl;
+    }
+    catch(const InvalidPasswordException& e) {
+        std::cout << e.what() << std::endl;
+    }
     catch (const CustomException &e) {
         cout << e.what() << endl;
     }
