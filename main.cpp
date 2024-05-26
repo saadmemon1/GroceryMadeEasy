@@ -156,7 +156,7 @@ void validateName(string& name, bool isCategoryName, bool isBrandName) {
                     }
                 }
             }
-            break; // If input is valid, break the loop
+            break;
         } catch (const CustomException& e) {
             cout << e.what() << endl;
             cout << "Please enter the name again: ";
@@ -243,7 +243,6 @@ public:
             }
         }
     }
-
     vector<Item*> items;
 };
 
@@ -511,7 +510,6 @@ vector<string> split(const string &s, char delimiter) {
 void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
     ifstream cartdb("cartdb.csv");
     if (!cartdb) {
-        // No cart file for this user, so just return
         return;
     }
     string line;
@@ -555,12 +553,10 @@ void saveCart(const Cart& cart, const string& username) {
                     break;
                 }
             }
-            // If the cart details are the same, return without writing anything to the file
             if (isSame) {
                 file.close();
                 return;
             }
-                // If the cart details are not the same, write the new cart details to the file
             else {
                 file.close();
                 ofstream file2("cartdb.csv",ios_base::app);
@@ -707,7 +703,6 @@ int main() {
             if (pID == "x" || pID == "X") {
                 saveCart(cart, username);
                 return 0;
-                // sign out and save cart
             }
             if (pID == "c" || pID == "C") {
                 if (cart_display(cart)) {
