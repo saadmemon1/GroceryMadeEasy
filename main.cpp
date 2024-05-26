@@ -333,7 +333,7 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
 
         // Draw
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(WHITE);
 
         // Draw the textboxes
         DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
@@ -347,6 +347,8 @@ bool LoginPage(const map<string,string>& users, Font &OpenSans) {
         }
         DrawTextEx(OpenSans, passwordHidden.c_str(), {passwordRec.x + 5, passwordRec.y + 5}, 35, 2.0f, BLACK);
 
+        DrawTextEx(OpenSans, "Login", {W/2 - MeasureTextEx(OpenSans, "Login", 50, 0).x/2, 100}, 50, 2.0f, BLACK);
+        DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
         DrawTextEx(OpenSans, "Enter your username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter your username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
         DrawTextEx(OpenSans, "Enter your password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter your password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
 
