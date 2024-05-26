@@ -8,6 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <memory>
+#include <iomanip>
 using namespace std;
 
 class InvalidNumberException : public exception {
@@ -32,7 +33,20 @@ public:
 class OutOfStockException : public std::exception {
 public:
     const char* what() const noexcept override {
-        return message.c_str();
+        return "Product out of stock.";
+    }
+};
+
+class InvalidUsernameException : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Invalid username. It must be at least 5 characters long.";
+    }
+};
+class InvalidPasswordException : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Invalid password. It must be at least 5 characters long.";
     }
 };
 
@@ -265,7 +279,7 @@ string UserHomePage(const std::vector<Item*>& items) {
                 return productID;
             }
             else {
-                cout << "Invalid product ID. Please enter a value between 1 and " << items.size() << ": ";
+                cout<< "Invalid product ID. Please enter a value between 1 and " << items.size() << ": ";
             }
         }
         else break;
@@ -307,7 +321,7 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     }
     if(item != nullptr ) {
         if(!item->inStock) {
-            cout << "Product out of stock." << endl;
+            throw OutOfStockException();
             return false;
         }
         cout << "\nDo you want to purchase this product? (Y/N)" << endl;
@@ -321,20 +335,20 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
                 cout << "Invalid quantity. Please enter a positive value and lower than quantity that we have in stock: ";
                 cin >> quantity;
             }
-                if (quantity == 0) {
-                    cout << "Product not added to cart." << endl;
-                    return false;
-                } else if (quantity > 0 && quantity <= item->quantity) {
-                    cout << "Product added to cart." << endl;
-                    for (size_t i = 0; i < quantity; i++) {
-                        c.addItem(item);
-                    }
-                    return true;
-                } else {
-                    cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
-                         << item->quantity << endl;
-                    return false;
+            if (quantity == 0) {
+                cout << "Product not added to cart." << endl;
+                return false;
+            } else if (quantity > 0 && quantity <= item->quantity) {
+                cout << "Product added to cart." << endl;
+                for (size_t i = 0; i < quantity; i++) {
+                    c.addItem(item);
                 }
+                return true;
+            } else {
+                cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
+                     << item->quantity << endl;
+                return false;
+            }
         } else {
             cout << "Product not added to cart." << endl;
             return false;
@@ -647,7 +661,7 @@ int main() {
                 cout << "Enter a username: ";
                 cin >> username;
                 if (!isValidUsername(username)) {
-                    cout << "Invalid username. It must be at least 5 characters long.\n";
+                    throw InvalidUsernameException();
                     continue;
                 } else if (users.find(username) != users.end()) {
                     cout << "Username already exists. Please enter a unique username.\n";
@@ -660,7 +674,7 @@ int main() {
                 cout << "Enter a password: ";
                 cin >> password;
                 if (!isValidPassword(password)) {
-                    cout << "Invalid password. It must be at least 5 characters long.\n";
+                    throw InvalidPasswordException();
                     continue;
                 }
 
@@ -727,7 +741,15 @@ int main() {
         }
     }
 
-
+    catch(const OutOfStockException& e) {
+        cout << e.what() << std::endl;
+    }
+    catch (const InvalidUsernameException& e) {
+        cout << e.what() << endl;
+    }
+    catch(const InvalidPasswordException& e) {
+        std::cout << e.what() << std::endl;
+    }
     catch (const CustomException &e) {
         cout << e.what() << endl;
     }
