@@ -155,10 +155,6 @@ CMakeFiles/GroceryMadeEasy.dir/main.cpp.obj: \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_vector.h \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_bvector.h \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc \
- C:/Users/PCCC/CLionProjects/Grocery/raylib/5.0/include/raylib.h \
- C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/stdarg.h \
- C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/x86_64-w64-mingw32/include/stdarg.h \
- C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/x86_64-w64-mingw32/include/_mingw_stdarg.h \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/fstream \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/codecvt.h \
  C:/Users/PCCC/Desktop/CLion\ 2023.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
