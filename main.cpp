@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <cctype>
 #include <map>
-#include <cctype>
 #include <algorithm>
 #include <memory>
 using namespace std;
@@ -26,6 +25,12 @@ public:
     string message;
     CustomException(string m) : message(m) {}
 
+    const char* what() const noexcept override {
+        return message.c_str();
+    }
+};
+class OutOfStockException : public std::exception {
+public:
     const char* what() const noexcept override {
         return message.c_str();
     }
@@ -164,8 +169,8 @@ public:
     }
 
     void addItem(Item* i) {
-        if(i->inStock) {
-            if(items.size() == 0) {
+        if (i->inStock) {
+            if (items.size() == 0) {
                 items.push_back(i);
                 i->quantityCart++;
                 i->quantity--;
@@ -190,8 +195,7 @@ public:
             if (i->quantity == 0) {
                 i->inStock = false;
             }
-        }
-        else {
+        } else {
             cout << "Item out of stock." << endl;
         }
     }
@@ -409,22 +413,6 @@ bool cart_display(Cart& c) {
     }
 }
 
-
-//bool CheckoutPage(Cart& c) {
-//    string addressInput = "";
-//
-//    while(true){
-//        cout << "Please enter your address: ";
-//        cin >> addressInput;
-//        if(addressInput.length() < 20) {
-//            cout << "Invalid address. Please enter a valid address." << endl;
-//            continue;
-//        }
-//        cout << "Address saved successfully." << endl;
-//        break;
-//
-//    }
-//}
 bool CheckoutPage(Cart& c) {
     string addressInput = "";
     c.display();
@@ -545,11 +533,6 @@ void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
                         cart.items.push_back(item);
                         break;
                     }
-//                        for (size_t j = 0; j < quantity; j++) {
-//                            cart.addItem(new Item(*item));
-//                        }
-//                        break;
-//                    }
                 }
             }
             break;
