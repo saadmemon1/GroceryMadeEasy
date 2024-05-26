@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <cctype>
 #include <map>
 #include <algorithm>
 #include <memory>
@@ -155,6 +156,7 @@ void validateName(string& name, bool isCategoryName, bool isBrandName) {
                     }
                 }
             }
+            break; // If input is valid, break the loop
         } catch (const CustomException& e) {
             cout << e.what() << endl;
             cout << "Please enter the name again: ";
@@ -181,8 +183,8 @@ public:
     }
 
     void addItem(Item* i) {
-        if (i->inStock) {
-            if (items.size() == 0) {
+        if(i->inStock) {
+            if(items.size() == 0) {
                 items.push_back(i);
                 i->quantityCart++;
                 i->quantity--;
@@ -207,7 +209,8 @@ public:
             if (i->quantity == 0) {
                 i->inStock = false;
             }
-        } else {
+        }
+        else {
             cout << "Item out of stock." << endl;
         }
     }
@@ -244,7 +247,7 @@ public:
     vector<Item*> items;
 };
 
-string UserHomePage(const vector<Item*>& items) {
+string UserHomePage(const std::vector<Item*>& items) {
     int titleWidth = 70;
     int priceWidth = 10;
     int idWidth = 10;
@@ -317,7 +320,7 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     }
     if(item != nullptr ) {
         if(!item->inStock) {
-            throw OutOfStockException();
+            cout << "Product out of stock." << endl;
             return false;
         }
         cout << "\nDo you want to purchase this product? (Y/N)" << endl;
@@ -333,24 +336,20 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
             }
                 if (quantity == 0) {
                     cout << "Product not added to cart." << endl;
-//                    delete item;
                     return false;
                 } else if (quantity > 0 && quantity <= item->quantity) {
                     cout << "Product added to cart." << endl;
                     for (size_t i = 0; i < quantity; i++) {
                         c.addItem(item);
                     }
-//                    delete item;
                     return true;
                 } else {
                     cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
                          << item->quantity << endl;
-//                    delete item;
                     return false;
                 }
         } else {
             cout << "Product not added to cart." << endl;
-//            delete item;
             return false;
         }
     }
@@ -512,6 +511,7 @@ vector<string> split(const string &s, char delimiter) {
 void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
     ifstream cartdb("cartdb.csv");
     if (!cartdb) {
+        // No cart file for this user, so just return
         return;
     }
     string line;
@@ -555,10 +555,12 @@ void saveCart(const Cart& cart, const string& username) {
                     break;
                 }
             }
+            // If the cart details are the same, return without writing anything to the file
             if (isSame) {
                 file.close();
                 return;
             }
+                // If the cart details are not the same, write the new cart details to the file
             else {
                 file.close();
                 ofstream file2("cartdb.csv",ios_base::app);
@@ -643,7 +645,7 @@ int main() {
                 cout << "Enter a username: ";
                 cin >> username;
                 if (!isValidUsername(username)) {
-                    throw InvalidUsernameException();
+                    cout << "Invalid username. It must be at least 5 characters long.\n";
                     continue;
                 } else if (users.find(username) != users.end()) {
                     cout << "Username already exists. Please enter a unique username.\n";
@@ -656,7 +658,7 @@ int main() {
                 cout << "Enter a password: ";
                 cin >> password;
                 if (!isValidPassword(password)) {
-                    throw InvalidPasswordException();
+                    cout << "Invalid password. It must be at least 5 characters long.\n";
                     continue;
                 }
 
@@ -673,9 +675,6 @@ int main() {
 
         vector<Category> categories;
         ifstream cat("categories.txt");
-        if(!cat) {
-            throw CustomException("Categories file not found.");
-        }
         string line1;
         while (getline(cat, line1)) {
             Category c(line1);
@@ -685,9 +684,6 @@ int main() {
 
         vector<Item*> items;
         ifstream file("items.txt");
-        if (!file) {
-            throw CustomException("Items file not found.");
-        }
         string line;
         while (getline(file, line)) {
             vector<string> parts = split(line, ',');
@@ -698,7 +694,7 @@ int main() {
             bool inStock = parts[4] == "true" ? true : false;
             Category category(parts[5]);
             int productID = stoi(parts[6]);
-            Item* i = new Item(name, brandName, quantity, price, inStock, category, productID);
+            Item *i = new Item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(i);
         }
         file.close();
@@ -711,6 +707,7 @@ int main() {
             if (pID == "x" || pID == "X") {
                 saveCart(cart, username);
                 return 0;
+                // sign out and save cart
             }
             if (pID == "c" || pID == "C") {
                 if (cart_display(cart)) {
@@ -741,9 +738,6 @@ int main() {
         cout << e.what() << endl;
     }
     catch(const InvalidNumberException &e) {
-        cout << e.what() << endl;
-    }
-    catch (const OutOfStockException &e) {
         cout << e.what() << endl;
     }
     catch (const std::exception &e) {
