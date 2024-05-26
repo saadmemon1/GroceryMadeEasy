@@ -33,12 +33,9 @@ public:
 
 void validateNumbers(int& n, bool isQuantity = false, bool isPrice = false);
 
-// Forward declaration for friend function
 void validateName(string& name, bool isCategoryName = false, bool isBrandName = false);
 
-
 class Item;
-
 
 class Category {
 protected:
@@ -47,7 +44,7 @@ public:
     string name;
     Category(const string& n) {
         string x = n;
-        validateName(x, true); // Call friend function for category name validation
+        validateName(x, true);
         name = x;
 
     }
@@ -68,16 +65,16 @@ public:
     string categoryName;
 
     Item(string n, string bN, int q, int p, bool iS, Category& c, int ID) : Category(c) {
-        validateName(n); // Call friend function for item name validation
+        validateName(n);
         name = n;
-        validateName(bN, false, true); // Call friend function for brand name validation
+        validateName(bN, false, true);
         brandName = bN;
 
-        validateNumbers(ID); // Call friend function for product ID validation
+        validateNumbers(ID);
         productID = ID;
-        validateNumbers(q, true); // Call friend function for quantity validation
+        validateNumbers(q, true);
         quantity = q;
-        validateNumbers(p, false, true); // Call friend function for price validation
+        validateNumbers(p, false, true);
         price = p;
         inStock = iS;
         if(quantity == 0) inStock = false;
@@ -108,17 +105,17 @@ void validateNumbers(int& n, bool isQuantity, bool isPrice) {
                     throw InvalidNumberException("Invalid Product! You have entered invalid product ID. Please enter a value between 1 and 99.");
                 }
             }
-            break; // If input is valid, break the loop
+            break;
         }
         catch (const InvalidNumberException& e) {
             cout << e.what() << endl;
             cout << "Please enter the number again: ";
             cin.clear();
-            while (cin.get() != '\n'); // ignore the rest of the line
+            while (cin.get() != '\n');
             cin >> n;
             if (cin.fail()) {
                 cin.clear();
-                while (cin.get() != '\n'); // ignore the rest of the line
+                while (cin.get() != '\n');
                 cout << "Invalid input. Please enter a number: ";
             }
         }
@@ -231,31 +228,19 @@ public:
     vector<Item*> items;
 };
 
-//int W = 1500, H = 900;
-//
-//int scrollOffset = 0;
-
-//void MainMenu(Font& OpenSans) {
-//    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {(W/2)-20 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 20, 0).x/2, 20}, 30, 2.0f, BLACK);
-//    DrawTextEx(OpenSans, "Press 'U' to login", {W/2 - MeasureTextEx(OpenSans, "Press 'U' to login as a user", 20, 0).x/2, static_cast<float>(H/2)}, 20, 2.0f, BLACK);
-//    DrawTextEx(OpenSans, "Press 'S' to sign up", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
-//}
-
 string UserHomePage(const std::vector<Item*>& items) {
-    int titleWidth = 70;  // The maximum width of the title
-    int priceWidth = 10;  // The maximum width of the price
-    int idWidth = 10;  // The maximum width of the product ID
+    int titleWidth = 70;
+    int priceWidth = 10;
+    int idWidth = 10;
 
     cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
     cout << "Here are the available products:\n" << endl;
     cout << endl;
-    // Print the column labels
     cout << left << setw(idWidth) << "PRODUCT ID"
          << setw(titleWidth) << "\t\tTITLE"
          << right << setw(priceWidth) << "PRICE" << "\n";
 
     for (size_t i = 0; i < items.size(); i++) {
-        // Print the ID, left-justified and padded to idWidth characters
         cout << left << setw(idWidth) << items[i]->productID;
 
         cout << setw(titleWidth) << items[i]->name;
@@ -283,95 +268,6 @@ string UserHomePage(const std::vector<Item*>& items) {
     }
     return productID;
 }
-//bool LoginPage(const map<string,string>& users, Font &OpenSans) {
-//    string usernameInput = "";
-//    string passwordInput = "";
-//    bool error = false;
-//    string errorMessage = "";
-//    Rectangle usernameRec = { 200, 200, 300, 50 };
-//    Rectangle passwordRec = { 200, 300, 300, 50 };
-//
-//    while (!WindowShouldClose()) {
-//        // Update
-//        int key = GetCharPressed();
-//
-//        // Check if a key has been pressed
-//        if ((key >= 48 && key <= 57) || (key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
-//            if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
-//                usernameInput += (char)key;
-//            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
-//                passwordInput += (char)key;
-//            }
-//        }
-//        // Check if ESC key has been pressed
-//        if (IsKeyPressed(KEY_ESCAPE)) {
-//            return false;
-//        }
-//
-//
-//        // Draw
-//        BeginDrawing();
-//        ClearBackground(WHITE);
-//
-//        // Draw the textboxes
-//        DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
-//        DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
-//
-//        // Draw the input text
-//        DrawTextEx(OpenSans, usernameInput.c_str(), {usernameRec.x + 5, usernameRec.y + 5}, 35, 2.0f, BLACK);
-//        string passwordHidden = "";
-//        for (size_t i = 0; i < passwordInput.length(); i++) {
-//            passwordHidden += "*";
-//        }
-//        DrawTextEx(OpenSans, passwordHidden.c_str(), {passwordRec.x + 5, passwordRec.y + 5}, 35, 2.0f, BLACK);
-//
-//        DrawTextEx(OpenSans, "Login", {W/2 - MeasureTextEx(OpenSans, "Login", 50, 0).x/2, 100}, 50, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "Enter your username:", {usernameRec.x - MeasureTextEx(OpenSans, "Enter your username:", 30, 0).x, usernameRec.y - 40}, 30, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "Enter your password:", {passwordRec.x - MeasureTextEx(OpenSans, "Enter your password:", 30, 0).x, passwordRec.y - 40}, 30, 2.0f, BLACK);
-//
-//        if(error) {
-//            DrawTextEx(OpenSans, errorMessage.c_str(), {200, 500}, 30, 2.0f, RED);
-//        }
-//        // Check if Enter key has been pressed
-//        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
-//            auto it = users.find(usernameInput);
-//            if (it == users.end()) {
-////                DrawTextEx(OpenSans, "Username does not exist. Please try again.", {200, 500}, 30, 2.0f, RED);
-//                usernameInput = "";
-//                passwordInput = "";
-//                error = true;
-//                errorMessage = "Username does not exist. Please try again.";
-//                continue;
-//            }
-//            if (it->second != passwordInput) {
-////                DrawTextEx(OpenSans, "Incorrect password. Please try again.", {200, 500}, 30, 2.0f, RED);
-//                passwordInput = "";
-//                error = true;
-//                errorMessage = "Incorrect password. Please try again.";
-//                continue;
-//            }
-//            error = false;
-//            EndDrawing();
-//            return true;
-//        }
-//
-//        EndDrawing();
-//        if(IsKeyPressed(KEY_BACKSPACE)){
-//            if(CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
-//                if (usernameInput.length() > 0) {
-//                    usernameInput.pop_back();
-//                }
-//            }
-//            if(CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
-//                if (passwordInput.length() > 0) {
-//                    passwordInput.pop_back();
-//                }
-//            }
-//        }
-//    }
-//    return false;
-//}
 
 void OrderConfirmationPage(Cart& cart) {
 
@@ -392,117 +288,6 @@ bool isValidPassword(const string & password){
 bool isValidUsername(const string& username) {
     return username.length() >= 5;
 }
-
-//bool createSignUpPage(map<string, string>& users, Font& OpenSans) {
-//    string usernameInput = "";
-//    string passwordInput = "";
-//    bool error = false;
-//    string message = "";    // For errors
-//    int framesDelay = 0;
-//    Rectangle usernameRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2 - 100), 300, 50 };
-//    Rectangle passwordRec = { static_cast<float>(W/2 - 150), static_cast<float>(H/2), 300, 50 };
-//
-//    while (!WindowShouldClose()) {
-//        // Update
-//        int key = GetCharPressed();
-//
-//        // Check if a key has been pressed
-//        if ((key >= 48 && key <= 57) || (key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
-//            if (CheckCollisionPointRec(GetMousePosition(), usernameRec) && usernameInput.length() < 10) {
-//                usernameInput += (char) key;
-//            } else if (CheckCollisionPointRec(GetMousePosition(), passwordRec) && passwordInput.length() < 10) {
-//                passwordInput += (char) key;
-//            }
-//        }
-//        if (IsKeyPressed(KEY_ESCAPE)) {
-//            return false;
-//        }
-//        // Draw
-//        BeginDrawing();
-//        ClearBackground(RAYWHITE);
-//
-//        // Draw the textboxes
-//        DrawRectangleLines(usernameRec.x, usernameRec.y, usernameRec.width, usernameRec.height, DARKGRAY);
-//        DrawRectangleLines(passwordRec.x, passwordRec.y, passwordRec.width, passwordRec.height, DARKGRAY);
-//
-//        // Draw the input text
-//        DrawTextEx(OpenSans, "Enter a username:",
-//                   {usernameRec.x - MeasureTextEx(OpenSans, "Enter a username:", 30, 0).x, usernameRec.y - 40}, 30,
-//                   2.0f, BLACK);
-//        DrawTextEx(OpenSans, "Enter a password:",
-//                   {passwordRec.x - MeasureTextEx(OpenSans, "Enter a password:", 30, 0).x, passwordRec.y - 40}, 30,
-//                   2.0f, BLACK);
-//        DrawTextEx(OpenSans, usernameInput.c_str(), {usernameRec.x + 5, usernameRec.y + 5}, 35, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, passwordInput.c_str(), {passwordRec.x + 5, passwordRec.y + 5}, 35, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "Press Enter to create an account.", {W/2 - MeasureTextEx(OpenSans, "Press Enter to create an account.", 30, 0).x/2, 700}, 30, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "Sign Up", {W/2 - MeasureTextEx(OpenSans, "Sign Up", 50, 0).x/2, 100}, 50, 2.0f, BLACK);
-//        DrawTextEx(OpenSans, "GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
-//        if(error) {
-//            DrawTextEx(OpenSans, message.c_str(), {200, 500}, 30, 2.0f, RED);
-//        }
-//        DrawFPS(10,10);
-//        if(framesDelay > 0) {
-//            DrawTextEx(OpenSans, "Account created successfully!", {200, 500}, 30, 2.0f, GREEN);
-//            framesDelay++;
-//            if(framesDelay > 90) {
-//                framesDelay = 0;
-////                    EndDrawing();
-//                return true; // Exit the loop
-//            }
-//        }
-//
-//        if (IsKeyPressed(KEY_ENTER) && usernameInput.length() > 0 && passwordInput.length() > 0) {
-//            auto it = users.find(usernameInput);
-//            if (it != users.end()) {
-////                DrawTextEx(OpenSans, "Username already exists. Please try again.", {200, 500}, 30, 2.0f, RED);
-//                usernameInput = "";
-//                passwordInput = "";
-//                message = "Username already exists. Please try again.";
-//                error = true;
-//                continue;
-//            }
-//
-//            if (!isValidUsername(usernameInput)) {
-////                DrawTextEx(OpenSans, "Username must be at least 5 characters long.", {200, 500}, 30, 2.0f, RED);
-//                usernameInput = "";
-//                passwordInput = "";
-//                error = true;
-//                message = "Username must be at least 5 characters long.";
-//                continue;
-//            }
-//            if (!isValidPassword(passwordInput)) {
-////                DrawTextEx(OpenSans,"Password must be at least 5 characters long and contain digits and letters only.",{200, 500}, 30, 2.0f, RED);
-//                passwordInput = "";
-//                error = true;
-//                message = "Password must be at least 5 characters long and contain digits and letters only.";
-//                continue;
-//            }
-//            error = false;
-//            framesDelay = 1;
-//            ofstream file2("usersdb.csv", ios_base::app);
-//            file2 << "\n" << usernameInput << "," << passwordInput;
-//            users.insert({usernameInput, passwordInput});
-//        }
-//
-//
-//        EndDrawing();
-//
-//        if(IsKeyPressed(KEY_BACKSPACE)){
-//            if(CheckCollisionPointRec(GetMousePosition(), usernameRec)) {
-//                if (usernameInput.length() > 0) {
-//                    usernameInput.pop_back();
-//                }
-//            }
-//            if(CheckCollisionPointRec(GetMousePosition(), passwordRec)) {
-//                if (passwordInput.length() > 0) {
-//                    passwordInput.pop_back();
-//                }
-//            }
-//        }
-//
-//    }
-//    return false;
-//}
 
 bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
     bool x = false;
@@ -591,7 +376,10 @@ bool cart_display(Cart& c) {
                 }
                 if(quantity == 0) {
                     cout << "Product removed from cart." << endl;
-                    c.removeItem(it);
+                    while(it->quantityCart > 0) {
+                        c.removeItem(it);
+                    }
+                    return false;
                 }
                 if (quantity > 0 && quantity <= (it->quantityCart + it->quantity)) {
                     cout << "Product quantity updated." << endl;
@@ -602,7 +390,9 @@ bool cart_display(Cart& c) {
                     cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of " << maximum << endl;
                 }
             }
-//            cout << "Product not found." << endl;
+            else {
+                cout << "Product not found." << endl;
+            }
         }
         cout << "Would you like to modify any other product's quantity? (Y/N)" << endl;
         cin >> choice;
@@ -777,7 +567,6 @@ void saveCart(const Cart& cart, const string& username) {
     while(getline(file, line)) {
         vector<string> parts = split(line, ',');
         if(parts[0] == username) {
-            // Check if the cart details are the same
             bool isSame = true;
             for (size_t i = 0; i < cart.items.size(); ++i) {
                 if (stoi(parts[i*2+1]) != cart.items[i]->productID || stoi(parts[i*2+2]) != cart.items[i]->quantityCart) {
@@ -831,85 +620,77 @@ void DeleteCart(const string& username) {
     rename("temp.csv", "cartdb.csv");
 }
 
-
-
 int main() {
-    map<string, string> users;
-
-    ifstream file2("usersdb.csv");
-    string line2;
-    while (getline(file2, line2)) {
-        vector<string> parts = split(line2, ',');
-        users.insert({parts[0], parts[1]});
-    }
-    file2.close();
-
-
-    char choice;
-   string username, password;
-    cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
-
-    while(true) {
-        cout << "Enter L to login or S to sign up: ";
-        cin >> choice;
-        choice = tolower(choice);
-        if (choice == 'l' || choice == 'L' || choice == 's' || choice == 'S') {
-            break;
+    try {
+        map<string, string> users;
+        ifstream file2("usersdb.csv");
+        string line2;
+        while (getline(file2, line2)) {
+            vector<string> parts = split(line2, ',');
+            users.insert({parts[0], parts[1]});
         }
-    }
-    while (true) {
-        if (choice == 'l') {
-            cout << "Enter your username: ";
-            cin >> username;
-            cout << "Enter your password: ";
-            cin >> password;
+        file2.close();
 
-            auto it = users.find(username);
-            if (it != users.end() && it->second == password) {
-                cout << "Login successful!\n";
+        char choice;
+        string username, password;
+        cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
+
+        while (true) {
+            cout << "Enter L to login or S to sign up: ";
+            cin >> choice;
+            choice = tolower(choice);
+            if (choice == 'l' || choice == 'L' || choice == 's' || choice == 'S') {
+                break;
+            }
+        }
+        while (true) {
+            if (choice == 'l') {
+                cout << "Enter your username: ";
+                cin >> username;
+                cout << "Enter your password: ";
+                cin >> password;
+
+                auto it = users.find(username);
+                if (it != users.end() && it->second == password) {
+                    cout << "Login successful!\n";
+                    break;
+                } else {
+                    cout << "Invalid username or password. Please try again.\n";
+                    cout << "Enter L to try again or S to sign up: ";
+                    cin >> choice;
+                    choice = tolower(choice);
+                }
+            } else if (choice == 's') {
+                cout << "Enter a username: ";
+                cin >> username;
+                if (!isValidUsername(username)) {
+                    cout << "Invalid username. It must be at least 5 characters long.\n";
+                    continue;
+                } else if (users.find(username) != users.end()) {
+                    cout << "Username already exists. Please enter a unique username.\n";
+                    cout << "Enter L to login or S to sign up: ";
+                    cin >> choice;
+                    choice = tolower(choice);
+                    continue;
+                }
+
+                cout << "Enter a password: ";
+                cin >> password;
+                if (!isValidPassword(password)) {
+                    cout << "Invalid password. It must be at least 5 characters long.\n";
+                    continue;
+                }
+
+                users.insert({username, password});
+                ofstream file("usersdb.csv", ios_base::app);
+                file << username << "," << password << "\n";
+                file.close();
+                cout << "\n\033[1mAccount created successfully!\033[0m\n";
                 break;
             } else {
-                cout << "Invalid username or password. Please try again.\n";
-                cout << "Enter L to try again or S to sign up: ";
-                cin >> choice;
-                choice = tolower(choice);
+                cout << "Invalid choice. Please enter L or S.\n";
             }
-        } else if (choice == 's') {
-            cout << "Enter a username: ";
-            cin >> username;
-            if (!isValidUsername(username)) {
-                cout << "Invalid username. It must be at least 5 characters long.\n";
-                continue;
-            }
-
-            else if (users.find(username) != users.end()) {
-                cout << "Username already exists. Please enter a unique username.\n";
-                cout << "Enter L to login or S to sign up: ";
-                cin >> choice;
-                choice = tolower(choice);
-                continue;
-            }
-
-            cout << "Enter a password: ";
-            cin >> password;
-            if (!isValidPassword(password)) {
-                cout << "Invalid password. It must be at least 5 characters long.\n";
-                continue;
-            }
-
-
-            users.insert({username,password});
-            ofstream file("usersdb.csv", ios_base::app);
-            file << username << "," << password << "\n";
-            file.close();
-            cout << "\n\033[1mAccount created successfully!\033[0m\n";
-            break;
-        } else {
-            cout << "Invalid choice. Please enter L or S.\n";
         }
-    }
-
-
 
         vector<Category> categories;
         ifstream cat("categories.txt");
@@ -932,59 +713,50 @@ int main() {
             bool inStock = parts[4] == "true" ? true : false;
             Category category(parts[5]);
             int productID = stoi(parts[6]);
-            Item* i = new Item(name, brandName, quantity, price, inStock, category, productID);
+            Item *i = new Item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(i);
         }
         file.close();
-//        map<int, Texture2D> textures;
-//        for (const auto& item : items) {
-//            Texture2D texture = LoadTexture(("resources/images/" + std::to_string(item.productID) + ".png").c_str());
-//            textures[item.productID] = texture;
-//        }
-//        map<string,string> users;
 
         Cart cart;
-    loadCart(username, items, cart);
+        loadCart(username, items, cart);
 
-    while(true) {
-        string pID = UserHomePage(items);
-        if (pID == "x" || pID == "X") {
-            saveCart(cart, username);
-            return 0;
-            // sign out and save cart
-        }
-        if (pID == "c" || pID == "C") {
-            // view cart
-            if(cart_display(cart)) {
-                if(CheckoutPage(cart)) {
-                    OrderConfirmationPage(cart);
-                    return 0; // End the loop after order confirmation
-                }
-                else {
-                    cout << "Order cancelled." << endl;
-                }
+        while (true) {
+            string pID = UserHomePage(items);
+            if (pID == "x" || pID == "X") {
+                saveCart(cart, username);
+                return 0;
+                // sign out and save cart
             }
-        }
-        else {
-            ItemPage(stoi(pID), items, cart);
+            if (pID == "c" || pID == "C") {
+                if (cart_display(cart)) {
+                    if (CheckoutPage(cart)) {
+                        OrderConfirmationPage(cart);
+                        DeleteCart(username);
+                        return 0;
+                    } else {
+                        cout << "Order cancelled." << endl;
+                    }
+                }
+            } else {
+                ItemPage(stoi(pID), items, cart);
+            }
         }
     }
 
-//        AppState state = MAIN_MENU;
 
-//    }
-//    catch (const CustomException &e) {
-//        cout << e.what() << endl;
-//    }
-//    catch(const InvalidNumberException &e) {
-//        cout << e.what() << endl;
-//    }
-//    catch (const std::exception &e) {
-//        cout << "Caught an exception: " << e.what() << endl;
-//    }
-//    catch (...) {
-//        cout << "Caught an unknown exception." << endl;
-//    }
+    catch (const CustomException &e) {
+        cout << e.what() << endl;
+    }
+    catch(const InvalidNumberException &e) {
+        cout << e.what() << endl;
+    }
+    catch (const std::exception &e) {
+        cout << "Caught an exception: " << e.what() << endl;
+    }
+    catch (...) {
+        cout << "Caught an unknown exception." << endl;
+    }
 
     return 0;
 }
