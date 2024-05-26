@@ -4,7 +4,7 @@ Antiseptic Hand Sanitizer | 250ml,Hemani,10,450,true,Healthcare,3
 Cat Food Sea Food | 450g,Morsus,3,700,true,PetNeeds,4
 Panadol | 500mg,GSK,7,32,true,Pharmacy,5
 Nivea Men Acne Oil Control Face Wash | 100g,Nivea,4,1100,true,Skincare,6
-Dishwash Liquid With Real Lemon Juice  | Pouch | 450ml,Finish,6,275,true,Household,7
+Dishwash Liquid With Real Lemon Juice | Pouch | 450ml,Finish,6,275,true,Household,7
 Maxob Toilet Tissue Roll | Single,Rose Petal,8,120,true,EverydayEssentials,8
 Pepsi | 1.5L,Pepsi,9,150,true,Beverages,9
 Frozen Chicken Nuggets | 500g,Sabroso,10,1500,true,FrozenItems,10

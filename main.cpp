@@ -241,14 +241,47 @@ public:
 //    DrawTextEx(OpenSans, "Press 'S' to sign up", {W/2 - MeasureTextEx(OpenSans, "Press 'R' to login as a rider", 20, 0).x/2, static_cast<float>(H/2)+60}, 20, 2.0f, BLACK);
 //}
 
-void UserHomePage(const std::vector<Item*>& items) {
-//    DrawTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", {W/2 - MeasureTextEx(OpenSans, "Welcome to GME: Grocery Made Easy", 30, 0).x/2, 20}, 30, 2.0f, BLACK);
+string UserHomePage(const std::vector<Item*>& items) {
+    int titleWidth = 70;  // The maximum width of the title
+    int priceWidth = 10;  // The maximum width of the price
+    int idWidth = 10;  // The maximum width of the product ID
 
-    int width = 250;
-    int height = 250; // Adjust as needed
-    int spacing = 100;
-    int itemsperRow = 3;
-    int rows = (items.size() + itemsperRow - 1) / itemsperRow;
+    cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
+    cout << "Here are the available products:\n" << endl;
+    cout << endl;
+    // Print the column labels
+    cout << left << setw(idWidth) << "PRODUCT ID"
+         << setw(titleWidth) << "\t\tTITLE"
+         << right << setw(priceWidth) << "PRICE" << "\n";
+
+    for (size_t i = 0; i < items.size(); i++) {
+        // Print the ID, left-justified and padded to idWidth characters
+        cout << left << setw(idWidth) << items[i]->productID;
+
+        cout << setw(titleWidth) << items[i]->name;
+
+        cout << right << setw(priceWidth) << "PKR " << items[i]->price;
+
+        cout << endl;
+    }
+
+    cout << "\nEnter the product ID of the product you want to view (Enter c to view cart, x to exit): " << endl;
+    string productID;
+    while(true) {
+        cin.ignore();
+        cin >> productID;
+        if(all_of(productID.begin(), productID.end(), ::isdigit)) {
+            int pID = stoi(productID);
+            if(pID > 0 && pID <= items.size()) {
+                return productID;
+            }
+            else {
+                cout << "Invalid product ID. Please enter a value between 1 and " << items.size() << ": ";
+            }
+        }
+        else break;
+    }
+    return productID;
 }
 //bool LoginPage(const map<string,string>& users, Font &OpenSans) {
 //    string usernameInput = "";
@@ -483,7 +516,11 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
             break;
         }
     }
-    if(item != nullptr) {
+    if(item != nullptr ) {
+        if(!item->inStock) {
+            cout << "Product out of stock." << endl;
+            return false;
+        }
         cout << "\nDo you want to purchase this product? (Y/N)" << endl;
         char choice;
         cin >> choice;
@@ -521,8 +558,12 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
 
 }
 
-bool cart_display(Cart c) {
+bool cart_display(Cart& c) {
     c.display();
+    if(c.items.size() == 0) {
+        cout << "Cart is empty." << endl;
+        return false;
+    }
     cout << "Do you want to modify any product's quantity? (Y/N)" << endl;
     char choice;
     cin >> choice;
@@ -620,11 +661,11 @@ bool CheckoutPage(Cart& c) {
         string  paymentMode;
         cin >> paymentMode;
 
-        if (paymentMode == "COD") {
+        if (paymentMode == "COD" || paymentMode == "cod") {
             cout << "You have selected Cash on Delivery." << endl;
             cout<<"Please keep the exact amount ready for the delivery person."<<endl;
             break;
-        } else if (paymentMode == "CC") {
+        } else if (paymentMode == "CC" || paymentMode == "cc") {
             cout << "You have selected Credit Card." << endl;
             cout << "Enter card holder name: ";
             string cardHolderName;
@@ -632,10 +673,10 @@ bool CheckoutPage(Cart& c) {
             getline(cin, cardHolderName);
 
 
-            cout << "Enter month of card expiration date: (MM) ";
+            cout << "Enter month of card expiration date (MM): ";
             int month;
             cin >> month;
-            cout << "\nEnter year of card expiration date: (YYYY)";
+            cout << "\nEnter year of card expiration date (YYYY): ";
             int year;
             cin >> year;
             if (month<01 || month>12) {
@@ -706,11 +747,19 @@ void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
                 int quantity = stoi(parts[i + 1]);
                 for (const auto& item : items) {
                     if (item->productID == productID) {
-                        for (size_t j = 0; j < quantity; j++) {
-                            cart.addItem(new Item(*item));
+                        item->quantityCart = quantity;
+                        item->quantity -= quantity;
+                        if (item->quantity == 0) {
+                            item->inStock = false;
                         }
+                        cart.items.push_back(item);
                         break;
                     }
+//                        for (size_t j = 0; j < quantity; j++) {
+//                            cart.addItem(new Item(*item));
+//                        }
+//                        break;
+//                    }
                 }
             }
             break;
@@ -720,19 +769,41 @@ void loadCart(const string& username, const vector<Item*>& items, Cart& cart) {
 }
 
 void saveCart(const Cart& cart, const string& username) {
-    ifstream file("cartdb.csv", ios_base::app);
+    if(cart.items.size() == 0) {
+        return;
+    }
+    ifstream file("cartdb.csv");
     string line;
     while(getline(file, line)) {
         vector<string> parts = split(line, ',');
         if(parts[0] == username) {
-            file.close();
-            ofstream file2("cartdb.csv",ios_base::app);
-            for(const auto& item: cart.items) {
-                file2 << item->productID << "," << item->quantityCart;
+            // Check if the cart details are the same
+            bool isSame = true;
+            for (size_t i = 0; i < cart.items.size(); ++i) {
+                if (stoi(parts[i*2+1]) != cart.items[i]->productID || stoi(parts[i*2+2]) != cart.items[i]->quantityCart) {
+                    isSame = false;
+                    break;
+                }
             }
-            file2 << "\n";
-            file.close();
-            return;
+            // If the cart details are the same, return without writing anything to the file
+            if (isSame) {
+                file.close();
+                return;
+            }
+                // If the cart details are not the same, write the new cart details to the file
+            else {
+                file.close();
+                ofstream file2("cartdb.csv",ios_base::app);
+                for(size_t i = 0; i < cart.items.size(); ++i) {
+                    if(i != 0) {
+                        file2 << ",";
+                    }
+                    file2 << cart.items[i]->productID << "," << cart.items[i]->quantityCart;
+                }
+                file2 << "\n";
+                file2.close();
+                return;
+            }
         }
     }
     file.close();
@@ -742,9 +813,8 @@ void saveCart(const Cart& cart, const string& username) {
         file1 << item->productID << "," << item->quantityCart;
     }
     file1 << "\n";
-    file.close();
+    file1.close();
 }
-
 void DeleteCart(const string& username) {
     ifstream file("cartdb.csv");
     ofstream temp("temp.csv");
@@ -765,7 +835,6 @@ void DeleteCart(const string& username) {
 
 int main() {
     map<string, string> users;
-    map<string, Cart> userCarts;
 
     ifstream file2("usersdb.csv");
     string line2;
@@ -779,7 +848,6 @@ int main() {
     char choice;
    string username, password;
     cout << "\n\033[1mWelcome to GME: Grocery Made Easy\033[0m\n" << endl;
-    cout << "Please login or sign up to continue." << endl;
 
     while(true) {
         cout << "Enter L to login or S to sign up: ";
@@ -802,6 +870,9 @@ int main() {
                 break;
             } else {
                 cout << "Invalid username or password. Please try again.\n";
+                cout << "Enter L to try again or S to sign up: ";
+                cin >> choice;
+                choice = tolower(choice);
             }
         } else if (choice == 's') {
             cout << "Enter a username: ";
@@ -811,8 +882,11 @@ int main() {
                 continue;
             }
 
-            if (users.find(username) != users.end()) {
+            else if (users.find(username) != users.end()) {
                 cout << "Username already exists. Please enter a unique username.\n";
+                cout << "Enter L to login or S to sign up: ";
+                cin >> choice;
+                choice = tolower(choice);
                 continue;
             }
 
@@ -823,7 +897,11 @@ int main() {
                 continue;
             }
 
+
             users.insert({username,password});
+            ofstream file("usersdb.csv", ios_base::app);
+            file << username << "," << password << "\n";
+            file.close();
             cout << "\n\033[1mAccount created successfully!\033[0m\n";
             break;
         } else {
@@ -840,6 +918,7 @@ int main() {
             Category c(line1);
             categories.push_back(c);
         }
+        cat.close();
 
         vector<Item*> items;
         ifstream file("items.txt");
@@ -856,6 +935,7 @@ int main() {
             Item* i = new Item(name, brandName, quantity, price, inStock, category, productID);
             items.push_back(i);
         }
+        file.close();
 //        map<int, Texture2D> textures;
 //        for (const auto& item : items) {
 //            Texture2D texture = LoadTexture(("resources/images/" + std::to_string(item.productID) + ".png").c_str());
@@ -864,22 +944,30 @@ int main() {
 //        map<string,string> users;
 
         Cart cart;
-    loadCart(username, items, userCarts[username]);
+    loadCart(username, items, cart);
 
-
-    UserHomePage(items);
-    int productID = 3;
-    ItemPage(productID, items, cart);
-    if(cart_display(cart)) {
-        if(CheckoutPage(cart)) {
-            OrderConfirmationPage(cart);
+    while(true) {
+        string pID = UserHomePage(items);
+        if (pID == "x" || pID == "X") {
+            saveCart(cart, username);
+            return 0;
+            // sign out and save cart
+        }
+        if (pID == "c" || pID == "C") {
+            // view cart
+            if(cart_display(cart)) {
+                if(CheckoutPage(cart)) {
+                    OrderConfirmationPage(cart);
+                    return 0; // End the loop after order confirmation
+                }
+                else {
+                    cout << "Order cancelled." << endl;
+                }
+            }
         }
         else {
-            cout << "Order cancelled." << endl;
+            ItemPage(stoi(pID), items, cart);
         }
-    }
-    else {
-        cout << "Order cancelled." << endl;
     }
 
 //        AppState state = MAIN_MENU;
