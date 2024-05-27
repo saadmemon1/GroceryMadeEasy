@@ -30,20 +30,20 @@ public:
         return message.c_str();
     }
 };
-class OutOfStockException : public std::exception {
+class OutOfStockException : public exception {
 public:
     const char* what() const noexcept override {
         return "Product out of stock.";
     }
 };
 
-class InvalidUsernameException : public std::exception {
+class InvalidUsernameException : public exception {
 public:
     const char* what() const noexcept override {
         return "Invalid username. It must be at least 5 characters long.";
     }
 };
-class InvalidPasswordException : public std::exception {
+class InvalidPasswordException : public exception {
 public:
     const char* what() const noexcept override {
         return "Invalid password. It must be at least 5 characters long.";
@@ -246,7 +246,7 @@ public:
     vector<Item*> items;
 };
 
-string UserHomePage(const std::vector<Item*>& items) {
+string UserHomePage(const vector<Item*>& items) {
     int titleWidth = 70;
     int priceWidth = 10;
     int idWidth = 10;
@@ -313,12 +313,14 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
         auto s = items[i];
         if(s->productID == productID) {
             s->display();
-            item = new Item(*s);
+            item = items[i];
             break;
         }
     }
     if(item != nullptr ) {
         if(!item->inStock) {
+            delete item;
+            throw OutOfStockException();
             cout << "Product out of stock." << endl;
             return false;
         }
@@ -335,6 +337,7 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
             }
                 if (quantity == 0) {
                     cout << "Product not added to cart." << endl;
+                    delete item;
                     return false;
                 } else if (quantity > 0 && quantity <= item->quantity) {
                     cout << "Product added to cart." << endl;
@@ -345,10 +348,12 @@ bool ItemPage(int productID, const vector<Item*>& items, Cart& c) {
                 } else {
                     cout << "Invalid quantity. Please enter a value less than or equal to the available quantity of "
                          << item->quantity << endl;
+                    delete item;
                     return false;
                 }
         } else {
             cout << "Product not added to cart." << endl;
+            delete item;
             return false;
         }
     }
@@ -641,6 +646,7 @@ int main() {
                 cout << "Enter a username: ";
                 cin >> username;
                 if (!isValidUsername(username)) {
+                    throw InvalidUsernameException();
                     cout << "Invalid username. It must be at least 5 characters long.\n";
                     continue;
                 } else if (users.find(username) != users.end()) {
@@ -654,6 +660,7 @@ int main() {
                 cout << "Enter a password: ";
                 cin >> password;
                 if (!isValidPassword(password)) {
+                    throw InvalidPasswordException();
                     cout << "Invalid password. It must be at least 5 characters long.\n";
                     continue;
                 }
@@ -709,6 +716,11 @@ int main() {
                     if (CheckoutPage(cart)) {
                         OrderConfirmationPage(cart);
                         DeleteCart(username);
+                        for(auto it : items) {
+                            it->quantity += it->quantityCart;
+                            it->quantityCart = 0;
+                            delete it;
+                        }
                         return 0;
                     } else {
                         cout << "Order cancelled." << endl;
@@ -721,13 +733,13 @@ int main() {
     }
 
     catch(const OutOfStockException& e) {
-        cout << e.what() << std::endl;
+        cout << e.what() << endl;
     }
     catch (const InvalidUsernameException& e) {
         cout << e.what() << endl;
     }
     catch(const InvalidPasswordException& e) {
-        std::cout << e.what() << std::endl;
+        cout << e.what() << endl;
     }
     catch (const CustomException &e) {
         cout << e.what() << endl;
@@ -735,7 +747,7 @@ int main() {
     catch(const InvalidNumberException &e) {
         cout << e.what() << endl;
     }
-    catch (const std::exception &e) {
+    catch (const exception &e) {
         cout << "Caught an exception: " << e.what() << endl;
     }
     catch (...) {
