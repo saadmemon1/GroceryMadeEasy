@@ -13,7 +13,7 @@ GroceryMadeEasy is a C++ application that simplifies the grocery shopping proces
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/yourusername/GroceryMadeEasy.git`
+1. Clone the repository: `git clone https://github.com/saadmemon1/GroceryMadeEasy.git`
 2. Navigate to the project directory: `cd GroceryMadeEasy`
 3. Compile the project: `g++ -o main main.cpp -std=c++20` (replace with your actual build command)
 4. Run the program: `./main`
